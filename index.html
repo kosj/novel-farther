@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 아빠 비주얼 노벨</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<style>
+/* 레이아웃 아이디어: 딸의 스케치북 한 권. 잉크 테두리 만화 칸(무대) 아래에 줄 공책 대사창. 강조는 '불 켜진 창' 노랑 하나. */
+:root{
+  color-scheme: light;
+  --ink:#1d2742;        /* 펜 잉크 남색 */
+  --ink-soft:#56617f;   /* 연필 회청 */
+  --paper:#f1f3f6;      /* 스케치북 종이 */
+  --paper-2:#e1e6ee;    /* 접힌 종이 그늘 */
+  --lamp:#f4b740;       /* 새벽 부엌 불빛 */
+  --blush:#d9634a;      /* 마음 눈금 */
+  --display:"Nanum Pen Script","Gowun Dodum",cursive;
+  --body:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.7;
+  background-image:radial-gradient(var(--paper-2) 1px,transparent 1.2px);background-size:18px 18px}
+.wrap{max-width:780px;margin:0 auto;padding:20px 16px 56px;display:flex;flex-direction:column;gap:18px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 20px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(44px,11vw,68px);line-height:.9;margin:0;transform:rotate(-2deg);transform-origin:left bottom}
+h1 small{display:block;font-family:var(--body);font-size:13px;color:var(--ink-soft);transform:rotate(2deg);margin-top:10px;letter-spacing:.02em}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav a{font-family:var(--body);font-size:14px;color:var(--ink);text-decoration:none;padding:6px 14px;border:2px solid var(--ink);border-radius:999px;background:var(--paper)}
+nav a[aria-current="page"]{background:var(--ink);color:var(--paper)}
+a:focus-visible,button:focus-visible,summary:focus-visible,label:focus-within{outline:3px solid var(--lamp);outline-offset:2px}
+section[hidden]{display:none}
+section{display:flex;flex-direction:column;gap:14px}
+
+/* 플레이 */
+.meta{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px;color:var(--ink-soft)}
+.meter{display:flex;align-items:center;gap:8px}
+.ticks{display:flex;gap:3px}
+.ticks i{width:9px;height:16px;border:1.5px solid var(--ink);border-radius:2px;background:transparent}
+.ticks i.on{background:var(--blush);border-color:var(--blush)}
+.stage{position:relative;aspect-ratio:16/9;border:3px solid var(--ink);border-radius:4px;overflow:hidden;background:var(--ink);box-shadow:6px 6px 0 var(--paper-2)}
+.stage canvas,.stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.stage img[hidden]{display:none}
+.cap{position:absolute;left:10px;top:6px;font-family:var(--display);font-size:24px;line-height:1;color:var(--paper);background:rgba(29,39,66,.62);padding:5px 12px 3px;border-radius:3px}
+.slot{position:absolute;right:8px;top:8px;font-size:11px;padding:2px 8px;border-radius:999px;background:rgba(241,243,246,.85);color:var(--ink)}
+.sprite{position:absolute;right:12px;top:-64px;width:86px;height:86px;border:3px solid var(--ink);border-radius:50%;overflow:hidden;background:var(--paper-2);--c:var(--ink)}
+.sprite[hidden]{display:none}
+.sprite .bust{position:absolute;inset:14px 14px 0}
+.sprite .bust::before{content:"";position:absolute;left:31%;top:0;width:38%;aspect-ratio:1;border-radius:50%;background:var(--paper);border:3px solid var(--ink)}
+.sprite .bust::after{content:"";position:absolute;left:0;bottom:-3px;width:100%;height:55%;border-radius:50% 50% 0 0/70% 70% 0 0;background:var(--c);border:3px solid var(--ink)}
+.sprite img{position:absolute;left:-18%;top:-4%;width:136%;height:auto}
+.sprite img[hidden]{display:none}
+.logbox{border:2px solid var(--ink);border-radius:4px;background:var(--paper);padding:10px 14px;max-height:260px;overflow-y:auto;font-size:14.5px;display:flex;flex-direction:column;gap:4px}
+.logbox[hidden]{display:none}
+.logbox b{font-weight:400;background:var(--lamp);padding:0 5px;border-radius:2px;margin-right:6px}
+.bar select{font:inherit;font-size:14px;padding:6px 10px;border:1.5px solid var(--ink-soft);border-radius:999px;background:var(--paper);color:var(--ink)}
+.bar button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.plan{display:flex;flex-direction:column;gap:8px}
+.plan .row{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:start;border:2px solid var(--ink);border-radius:4px;padding:10px 12px;background:var(--paper)}
+.plan .row p{grid-column:2;font-size:14.5px;line-height:1.6}
+.pill{font-size:12px;padding:2px 10px;border-radius:999px;border:1.5px solid var(--ink);white-space:nowrap;margin-top:3px}
+.pill.done{background:var(--ink);color:var(--paper)}
+.pill.wait{background:transparent;border-style:dashed}
+.pill.need{background:var(--lamp)}
+.dialog{position:relative;border:3px solid var(--ink);border-radius:4px;background:
+  repeating-linear-gradient(var(--paper) 0 31px,var(--paper-2) 31px 32px);padding:22px 18px 16px;min-height:172px;cursor:pointer}
+.who{position:absolute;top:-16px;left:14px;font-family:var(--display);font-size:26px;line-height:1;padding:4px 14px 2px;background:var(--lamp);border:2px solid var(--ink);border-radius:3px;transform:rotate(-2deg)}
+.who:empty{display:none}
+.text{margin:0;font-size:17px;line-height:32px;white-space:pre-wrap;max-width:36em}
+.text.ch{font-family:var(--display);font-size:38px;line-height:1.1;padding-top:14px}
+.text.narr{color:var(--ink-soft)}
+.text.book{font-family:var(--display);font-size:27px;line-height:32px}
+.next{position:absolute;right:14px;bottom:8px;font-size:13px;color:var(--ink-soft)}
+.choices{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+button{font:inherit;color:var(--ink);cursor:pointer}
+.choices button{text-align:left;padding:10px 14px;border:2px solid var(--ink);border-radius:3px;background:var(--paper);font-size:16px;line-height:1.5}
+.choices button:hover{background:var(--lamp)}
+.bar{display:flex;gap:8px;flex-wrap:wrap}
+.bar button,.bar label,.copy{font-size:14px;padding:6px 12px;border:1.5px solid var(--ink-soft);border-radius:999px;background:var(--paper);color:var(--ink);cursor:pointer}
+.bar input{position:absolute;opacity:0;width:1px;height:1px}
+.pbox{border:1.5px dashed var(--ink-soft);border-radius:4px;padding:12px 14px;background:var(--paper);display:flex;flex-direction:column;gap:8px}
+.pbox[hidden]{display:none}
+code,.prompt{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.55;overflow-wrap:anywhere}
+
+/* 기획서, 프롬프트 */
+h2{font-family:var(--display);font-weight:400;font-size:36px;line-height:1;margin:14px 0 0;text-wrap:balance}
+h3{font-size:17px;margin:8px 0 0}
+p{margin:0;max-width:38em}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.card{border:2px solid var(--ink);border-radius:4px;padding:12px 14px;background:var(--paper);display:flex;flex-direction:column;gap:4px}
+.card b{font-family:var(--display);font-weight:400;font-size:28px;line-height:1}
+.card span{font-size:13px;color:var(--ink-soft)}
+.card p{font-size:14.5px;line-height:1.6}
+ol.chs{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px;max-width:38em}
+.script{display:flex;flex-direction:column;gap:4px;font-size:15px}
+.script .bg{margin-top:10px;font-size:13px;color:var(--ink-soft);border-top:1.5px dashed var(--ink-soft);padding-top:8px}
+.script .ln b{font-weight:400;background:var(--lamp);padding:0 5px;border-radius:2px;margin-right:6px}
+.script .ln.n{color:var(--ink-soft)}
+.script .ch-box{border-left:4px solid var(--blush);padding:4px 0 4px 12px;margin:6px 0;display:flex;flex-direction:column;gap:6px}
+.script .opt{font-weight:700}
+.script .opt em{font-style:normal;font-weight:400;font-size:12px;color:var(--blush);margin-left:6px}
+.script .rep{padding-left:14px;display:flex;flex-direction:column;gap:2px}
+.pcard{border:2px solid var(--ink);border-radius:4px;padding:12px 14px;background:var(--paper);display:flex;flex-direction:column;gap:8px}
+.pcard header{align-items:center}
+.pcard header b{font-size:16px}
+.pcard header span{font-size:13px;color:var(--ink-soft)}
+.note{font-size:14px;color:var(--ink-soft)}
+@media (prefers-reduced-motion:no-preference){.next{animation:bob 1.2s ease-in-out infinite}@keyframes bob{50%{transform:translateY(3px)}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>우리 아빠<small>웹 비주얼 노벨 프로토타입 · 전 5장 · 선택지 11개</small></h1>
+    <nav aria-label="보기 전환">
+      <a href="#play" data-v="play">플레이</a>
+      <a href="#plan" data-v="plan">기획서·대본</a>
+      <a href="#prompts" data-v="prompts">이미지·사운드 프롬프트</a>
+    </nav>
+  </header>
+
+  <section id="v-play">
+    <div class="meta">
+      <span id="chapter"></span>
+      <span class="meter" id="meter" role="img"><span>자존감</span><span class="ticks" id="ticks"></span></span>
+    </div>
+    <div class="stage">
+      <canvas id="cv" width="960" height="540" aria-hidden="true"></canvas>
+      <img id="shot" alt="" hidden>
+      <span class="slot" id="slot">VARCO 이미지 자리</span>
+      <span class="cap" id="cap"></span>
+    </div>
+    <div class="dialog" id="dialog" tabindex="0" role="button" aria-label="다음 대사로 넘기기">
+      <span class="who" id="who"></span>
+      <div class="sprite" id="sprite" hidden><span class="bust" id="bust"></span><img id="simg" alt="" hidden></div>
+      <p class="text" id="text" aria-live="polite"></p>
+      <div class="choices" id="choices"></div>
+      <span class="next" id="next">눌러서 계속 ▼</span>
+    </div>
+    <div class="bar">
+      <button type="button" id="restart">처음부터</button>
+      <select id="jump" aria-label="장 이동"></select>
+      <button type="button" id="auto" aria-pressed="false">자동 넘김</button>
+      <button type="button" id="logbtn" aria-expanded="false">지난 대사</button>
+      <button type="button" id="snd" aria-pressed="false">소리 켜기</button>
+      <button type="button" id="showp" aria-expanded="false">이 장면 프롬프트 보기</button>
+      <label for="file">내 이미지 넣어 보기<input type="file" id="file" accept="image/*"></label>
+    </div>
+    <p class="note" id="now"></p>
+    <div class="logbox" id="logbox" hidden></div>
+    <div class="pbox" id="pbox" hidden>
+      <div class="prompt" id="ptext"></div>
+      <div><button type="button" class="copy" id="pcopy">프롬프트 복사</button></div>
+    </div>
+    <p class="note">대사창을 누르거나 Enter, Space로 넘깁니다. 진행 상황은 이 브라우저에 자동 저장되어 다음에 이어집니다. 장면 그림을 바꾸려면 <code>images</code> 폴더의 파일을 교체하거나 코드의 <code>BG</code> 목록에서 <code>img</code> 경로를 고치면 됩니다. '내 이미지 넣어 보기'는 이 브라우저에서만 잠깐 보입니다.</p>
+  </section>
+
+  <section id="v-plan" hidden>
+    <h2>작업 계획</h2>
+    <p class="note">A·B·C는 서로 기다릴 필요가 없어 동시에 진행한 작업입니다. D부터는 앞 단계가 끝나야 시작할 수 있습니다.</p>
+    <div class="plan" id="plan"></div>
+    <h2>등장인물</h2>
+    <div class="cards" id="cast"></div>
+    <h2>챕터 구성</h2>
+    <ol class="chs" id="chlist"></ol>
+    <h2>선택지 설계</h2>
+    <p>선택지는 결말을 가르지 않고 <b>자존감</b> 눈금(0~10, 시작 3)을 움직입니다. 자신을 탓하는 선택은 내려가고, 감정을 솔직히 인정하거나 도움을 받아들이는 선택은 올라갑니다. 4장의 반전에서 크게 오르며, 마지막 결혼식 장면의 한 줄이 눈금 8 이상인지에 따라 달라집니다. 어떤 길로 가도 해피엔딩에 닿는 구조라서 이야기의 감정선이 끊기지 않습니다.</p>
+    <h2>전체 대본</h2>
+    <div class="script" id="script"></div>
+  </section>
+
+  <section id="v-prompts" hidden>
+    <h2>공통 스타일</h2>
+    <p class="note">모든 장면 프롬프트 앞에 붙여 그림체를 맞춥니다. 화면 비율은 16:9로 생성하세요.</p>
+    <div class="pcard"><div class="prompt" id="style"></div><div><button type="button" class="copy" data-copy="style">복사</button></div></div>
+    <h2>캐릭터 고정 묘사</h2>
+    <p class="note">인물이 나오는 장면마다 같은 묘사를 넣어야 얼굴과 옷이 유지됩니다.</p>
+    <div id="charp" style="display:flex;flex-direction:column;gap:10px"></div>
+    <h2>캐릭터 스탠딩</h2>
+    <p class="note">대사창에 뜨는 인물 그림입니다. 장면 그림에서 얼굴을 맞추는 참조로도 썼습니다. 배경을 지운 파일을 <code>images</code> 폴더에 넣고 코드의 <code>SPRITE</code> 목록에 연결합니다. 표정은 같은 프롬프트 끝의 표정 단어만 바꿔 여러 장 뽑으세요.</p>
+    <div class="pcard"><div class="prompt" id="spstyle"></div><div><button type="button" class="copy" data-copy="spstyle">복사</button></div></div>
+    <div id="splist" style="display:flex;flex-direction:column;gap:10px"></div>
+    <h2>장면별 프롬프트</h2>
+    <div id="plist" style="display:flex;flex-direction:column;gap:10px"></div>
+    <h2>배경음 (ElevenLabs)</h2>
+    <p class="note">끊김 없이 반복되는 연주곡 5곡입니다. 파일은 <code>audio/</code> 폴더에 있고, 코드의 <code>BGM</code> 목록에서 장면별 곡을 바꿀 수 있습니다.</p>
+    <div id="bgmlist" style="display:flex;flex-direction:column;gap:10px"></div>
+    <h2>효과음 (ElevenLabs)</h2>
+    <p class="note">짧은 효과음 8종입니다. <code>SFX</code> 목록의 <code>file</code> 경로를 채우면 됩니다.</p>
+    <div id="sfxlist" style="display:flex;flex-direction:column;gap:10px"></div>
+  </section>
+</div>
+
+<script>
+/* ===== 1. 데이터: 배경(장면) ===== */
+// img 에 'images/ch1_kitchen.png' 같은 경로를 넣으면 캔버스 대신 그 이미지를 씁니다.
+const STYLE = "warm soft anime illustration, gentle watercolor shading, delicate line art, emotional cinematic lighting, cozy slice-of-life mood, visual novel event CG, detailed background, 16:9";
+const CHARS = [
+  ["한정우 (30대 / 40대 후반)", "Korean man, game programmer, kind tired eyes behind thin rectangular glasses, short black hair (slightly graying at the temples when older), a wrist brace on his right hand, navy zip-up hoodie with a company ID lanyard, gentle modest smile"],
+  ["한서윤 (7세 / 20세)", "Korean girl with a short bob haircut and a small yellow hairpin, bright curious eyes; as an adult she carries a large art portfolio bag and wears an oversized cream hoodie"],
+  ["윤지수 (40대 초반)", "Korean woman in her early 40s, shoulder-length wavy hair, round glasses, mustard knit cardigan, calm warm smile, bookstore owner"],
+];
+// 인물 초상: 대사창 오른쪽 위에 말하는 사람 얼굴이 뜹니다. img 는 장 번호를 받아 그 시기의 그림 경로를 돌려줍니다. c 는 그림이 없을 때 실루엣 색.
+const SPRITE = {
+  "정우":{img:ch=>ch<=1?"images/sp_jw30.webp":ch>=5?"images/sp_jwbright.webp":"images/sp_jw40.webp",c:"#1d2742"},
+  "서윤":{img:ch=>ch<=1?"images/sp_sy7.webp":"images/sp_sy20.webp",c:"#f4b740"},
+  "지수":{img:()=>"images/sp_jisoo.webp",c:"#c9912e"}, "어머니":{img:()=>"images/sp_mom.webp",c:"#d9634a"},
+  "아버지":{img:()=>"images/sp_dad.webp",c:"#56617f"}, "박민호":{img:()=>"images/sp_minho.webp",c:"#77849f"},
+};
+const SP_STYLE = "full-body standing character sprite for a visual novel, warm soft anime illustration, gentle watercolor shading, delicate line art, facing slightly toward the viewer, plain white background, no scenery, soft even lighting";
+const SP = [
+  ["정우 · 30대 (1장)", "Korean man in his mid 30s, game programmer, thin rectangular glasses, short black hair, tired kind eyes, wrinkled gray shirt with rolled sleeves, wrist brace on right hand, expression: exhausted gentle smile"],
+  ["정우 · 40대 후반 (2~4장)", "Korean man in his late 40s, game programmer, thin rectangular glasses, short black hair graying at the temples, navy zip-up hoodie with company ID lanyard, wrist brace on right hand, slightly hunched shoulders, expression: modest unsure smile"],
+  ["정우 · 밝아진 모습 (5장)", "same man in his late 40s, straight confident posture, navy zip-up hoodie over a clean white shirt, thin rectangular glasses, expression: wide bright laugh"],
+  ["서윤 · 7세", "7-year-old Korean girl, short bob haircut with a small yellow hairpin, yellow raincoat, holding crayons and a sketchbook, expression: big innocent smile"],
+  ["서윤 · 20대", "Korean woman around 20, short bob haircut with a small yellow hairpin, oversized cream hoodie, large art portfolio bag on her shoulder, expression: playful confident grin"],
+  ["지수", "Korean woman in her early 40s, shoulder-length wavy hair, round glasses, mustard knit cardigan over a white blouse, long skirt, holding a cup of tea, expression: calm warm smile"],
+  ["어머니", "Korean woman in her 70s, short permed gray hair, floral blouse and comfortable vest, expression: worried but loving smile"],
+  ["아버지", "Korean man in his 70s, thin white hair, plaid shirt and old cardigan, hands behind his back, expression: stern face with soft eyes"],
+  ["박민호", "Korean man in his early 30s, messy hair, headphones around his neck, graphic t-shirt under an open flannel shirt, expression: cheerful mischievous grin"],
+];
+// 사운드: file 에 'audio/rain.mp3' 같은 경로를 넣으면 재생됩니다. 비어 있으면 조용히 건너뜁니다.
+const BGM = {
+  rain:{name:"비 오는 부엌",file:"audio/rain.mp3",use:"1장 부엌, 3장 카페와 퇴근길",
+    p:"slow lonely solo piano with soft felt-piano tone, faint rain ambience, sparse notes, melancholic but tender, 70 bpm, instrumental, seamless loop, 90 seconds"},
+  warm:{name:"마루의 오후",file:"audio/warm.mp3",use:"부모님 댁, 사무실, 책방",
+    p:"warm gentle acoustic guitar and soft piano, light glockenspiel, cozy everyday slice-of-life mood, hopeful and calm, 85 bpm, instrumental, seamless loop, 90 seconds"},
+  farewell:{name:"간사이행",file:"audio/farewell.mp3",use:"2장 서윤의 방, 공항",
+    p:"bittersweet piano melody with quiet warm strings, feeling of a parent saying goodbye at an airport at dawn, restrained and emotional, 72 bpm, instrumental, seamless loop, 90 seconds"},
+  reveal:{name:"우리 아빠",file:"audio/reveal.mp3",use:"4장 반전, 영상통화",
+    p:"emotional piano theme starting with a single music box motif, slowly joined by swelling strings, tearful realization of being loved, builds gently then settles, 66 bpm, instrumental, seamless loop, 100 seconds"},
+  spring:{name:"봄날",file:"audio/spring.mp3",use:"5장 노을, 결혼식",
+    p:"bright joyful acoustic ensemble with piano, ukulele, light strings and soft hand claps, spring wedding happiness, warm and uplifting, 100 bpm, instrumental, seamless loop, 90 seconds"},
+};
+const SFX = {
+  choice:{name:"선택",file:"audio/choice.mp3",use:"선택지를 누를 때",p:"soft wooden UI click, short and gentle"},
+  chapter:{name:"장 시작",file:"audio/chapter.mp3",use:"각 장 제목",p:"soft warm chime with a short piano note, gentle chapter transition"},
+  page:{name:"책장 넘김",file:"audio/page.mp3",use:"4장, 원작 책 첫 장을 넘길 때",p:"single paper page turning slowly in a quiet room, close up"},
+  keys:{name:"키보드",file:"audio/keys.mp3",use:"사무실 장면 진입",p:"mechanical keyboard typing in a quiet office, three seconds, soft"},
+  bell:{name:"책방 문종",file:"audio/bell.mp3",use:"책방 장면 진입",p:"small brass door bell jingling as a shop door opens, cozy bookstore"},
+  airport:{name:"공항 안내음",file:"audio/airport.mp3",use:"공항 장면 진입",p:"airport terminal announcement chime, four soft tones, slight hall reverb, no voice"},
+  ring:{name:"영상통화 수신",file:"audio/ring.mp3",use:"영상통화 장면 진입",p:"gentle smartphone video call ringtone, two short melodic rings"},
+  shutter:{name:"카메라 셔터",file:"audio/shutter.mp3",use:"결혼식 사진 장면",p:"camera shutter click followed by a small group of people laughing warmly"},
+};
+// 장면별 [배경음, 장면에 들어올 때 효과음]
+const SCENE_AUDIO = { kitchen:["rain",""], yard:["warm",""], desk:["farewell",""], airport:["farewell","airport"], cafe:["rain",""], street:["rain",""],
+  office:["warm","keys"], book:["warm","bell"], proof:["reveal",""], call:["reveal","ring"], hill:["spring",""], wed:["spring",""] };
+const PLAN = [
+  ["A","엔진 기능","done","자동 저장과 이어하기, 지난 대사, 자동 넘김, 장 이동을 넣었습니다."],
+  ["B","캐릭터 스탠딩","done","인물 그림 9종을 만들었습니다. 장면 그림에 인물이 이미 들어 있어, 무대에 겹쳐 세우는 대신 대사창의 얼굴 초상으로 씁니다."],
+  ["C","VARCO 연결 확인","done","연결되었습니다."],
+  ["D","이미지 생성","done","장면 12장과 인물 9종을 VARCO로 만들었습니다. 계정의 기본 모델이 장당 50포인트라 모두 1,050포인트가 들었습니다."],
+  ["E","이미지 적용과 화면 점검","done","21장을 게임에 연결했습니다. 인물 배경 제거는 자동 처리라 가장자리가 거친 곳이 있을 수 있습니다."],
+  ["F","배경음과 효과음","done","ElevenLabs로 만든 배경음 5곡과 효과음 8종을 연결했습니다(약 4,640크레딧). '소리 켜기'를 누르면 장면에 맞춰 재생됩니다."],
+  ["G","통합 플레이 점검","done","세 가지 경로(선택지 전부 첫째, 전부 둘째, 자존감 최저)를 결말까지 자동 플레이해 오류가 없음을 확인했습니다. 저장·이어하기, 장 이동, 지난 대사, 자동 넘김, 그림 21장과 음원 13개 불러오기도 통과했습니다. 그림의 느낌과 소리는 사람이 직접 보고 들어야 합니다."],
+];
+const BG = {
+  kitchen:{name:"비 오는 저녁의 부엌",img:"images/bg_kitchen.jpg",sky:["#232c49","#4d5878"],light:[.7,.34,"window"],fx:"rain",
+    p:"a small Korean apartment kitchen at 4 a.m., a single father in his 30s clumsily rolling kimbap under one warm ceiling light, torn kimbap rolls on the cutting board, an open laptop with code glowing on the dining table, rain on the dark window, his 7-year-old daughter peeking sleepily from the doorway, tender and lonely atmosphere"},
+  yard:{name:"부모님 댁 마루",img:"images/bg_yard.jpg",sky:["#cfdfe9","#f6dc9c"],light:[.22,.26,"sun"],fx:"",
+    p:"an old Korean family house with a wooden porch on a sunny weekend afternoon, elderly parents sitting beside their exhausted adult son, a little girl lying on the floor drawing a big hand with a wrist brace holding a small hand with crayons, persimmon tree in the yard, nostalgic golden light"},
+  desk:{name:"새벽 두 시, 서윤의 방",img:"images/bg_desk.jpg",sky:["#1a2140","#3b4670"],light:[.62,.5,"lamp"],fx:"star",
+    p:"a 20-year-old girl's bedroom at 2 a.m., desk lamp glowing over sketchbooks and a drawing tablet, an acceptance letter from an art university in Kyoto on the desk, her father standing at the door holding two mugs, quiet emotional night"},
+  airport:{name:"인천공항 출국장",img:"images/bg_airport.jpg",sky:["#a9bcd2","#f5dcb6"],light:[.5,.6,"sun"],fx:"",
+    p:"airport departure hall at dawn, huge glass windows with sunrise and a plane outside, a young woman with an oversized art bag walking toward the gate without looking back, her father standing alone waving with a small smile and wet eyes, bittersweet farewell"},
+  cafe:{name:"소개팅 카페",img:"images/bg_cafe.jpg",sky:["#5c657e","#a9b0c2"],light:[.3,.3,"window"],fx:"rain",
+    p:"a quiet cafe on a gray rainy afternoon, a middle-aged man sitting alone at a table for two with two coffee cups, the opposite chair empty, his reflection faint in the window, muted colors, lonely mood"},
+  street:{name:"퇴근길 편의점 앞",img:"images/bg_street.jpg",sky:["#151b33","#333d62"],light:[.78,.2,"moon"],fx:"star",
+    p:"a quiet Korean residential street at night, a tired middle-aged man standing in front of a convenience store, his reflection in the glass, moon above low apartment buildings, cool blue tones with one warm store light"},
+  office:{name:"스튜디오 달빛 사무실",img:"images/bg_office.jpg",sky:["#343f5c","#77849f"],light:[.5,.18,"lamp"],fx:"",
+    p:"a small indie game studio office in the evening, desks with dual monitors showing code and game art, figures and energy drink cans, a kind lead programmer in a navy hoodie leaning over a junior's desk to help fix a bug while younger coworkers smile at him warmly from behind, pendant lamps, hardworking cozy atmosphere"},
+  book:{name:"골목 책방 쉼표",img:"images/bg_book.jpg",sky:["#efd183","#f8eccd"],light:[.74,.36,"window"],fx:"",
+    p:"a tiny independent bookstore in an alley, wooden shelves, warm afternoon sunlight through the window, a woman with round glasses and a mustard cardigan handing a cup of barley tea to a shy regular customer in a navy hoodie holding a wrapped parcel of books, gentle budding romance"},
+  proof:{name:"금요일 밤의 원작 자료",img:"images/bg_proof.jpg",sky:["#1b2340","#46507a"],light:[.5,.5,"page"],fx:"",
+    p:"close view of a game developer's desk at night under a single lamp, a monitor and a printed art book both showing a cover illustration of a big hand with a wrist brace holding a small child's hand, a middle-aged man's trembling hand on the page, a tear falling on the paper, deeply moving moment"},
+  call:{name:"영상통화, 서울과 교토",img:"images/bg_call.jpg",sky:["#1d2545","#404b78"],light:[.5,.46,"screen"],fx:"star",
+    p:"a man sitting in a dark living room at night lit by a phone screen, on the screen his grown daughter in her small Kyoto student room grinning and holding up her illustrated book, he is crying and laughing at once, warm glow against deep blue night"},
+  hill:{name:"뒷산 노을",img:"images/bg_hill.jpg",sky:["#f0a064","#f8de9a"],light:[.5,.62,"sun"],fx:"",
+    p:"a hilltop overlooking a small Korean town at autumn sunset, a middle-aged man nervously proposing to a woman in a mustard cardigan, silver grass swaying, orange and gold sky, quiet heartfelt romance"},
+  wed:{name:"봄날의 작은 결혼식",img:"images/bg_wed.jpg",sky:["#c9e0f1","#fdf2cc"],light:[.5,.24,"sun"],fx:"petal",
+    p:"a small outdoor spring wedding in a garden, cherry blossom petals falling, a brightly laughing groom in his late 40s and his bride with round glasses, elderly parents smiling, a young woman with an art bag running in and hugging them, everyone laughing together, joyful group shot"},
+};
+
+/* ===== 2. 데이터: 대본 ===== */
+// 노드: {ch,t} 장 제목 / {bg} 배경 전환 / [화자, 대사] / {c:[{t,d,r}]} 선택지 / {iff:[hi,lo]} 조건 대사 / {end}
+// 화자 "" = 내레이션, "책" = <우리 아빠> 본문
+const S = [
+  {bg:"kitchen"},{ch:1,t:"제1장  옆구리 터진 김밥"},
+  ["","이혼 서류에 도장을 찍은 지 석 달. 아내의 마음은 이미 오래전에 다른 사람에게 가 있었다."],
+  ["","남은 건 서른넷의 게임 프로그래머인 나, 그리고 일곱 살 서윤이."],
+  ["","밤 열한 시. 식탁 위 노트북에서는 내일 아침 마감인 빌드가 세 번째 오류를 뱉고 있었다."],
+  ["","싱크대에는 어제 그릇이, 빨래 바구니에는 사흘 치 옷이 쌓여 있다."],
+  ["서윤","아빠, 엄마는 이제 안 와?"],
+  ["정우","(올 것이 왔다. 석 달 동안 미뤄 온 질문.)"],
+  {c:[
+    {t:"“응. 엄마는 이제 다른 집에서 살아. 그래도 서윤이 엄마인 건 변함없어.”",d:1,r:[
+      ["서윤","…그럼 아빠는? 아빠도 어디 가?"],
+      ["정우","아빠는 안 가. 어디에도."],
+      ["","서윤이는 한참 나를 보다가, 고개를 한 번 끄덕였다."]]},
+    {t:"“…엄마는 좀 멀리 일하러 갔어.”",d:0,r:[
+      ["서윤","거짓말. 할머니가 전화로 말하는 거 다 들었어."],
+      ["서윤","아빠는 안 가지?"],
+      ["정우","…안 가. 미안하다, 아빠가 거짓말했어."]]}
+  ]},
+  ["서윤","아빠, 내일 소풍인데… 김밥 싸 줄 수 있어?"],
+  ["정우","(김밥. 한 번도 말아 본 적이 없다. 내일 아침은 빌드 마감인데.)"],
+  {c:[
+    {t:"“아빠가 제일 맛있게 싸 줄게.”",d:1,r:[
+      ["","새벽 네 시. 옆구리가 터진 김밥이 일곱 줄째 쌓였다."],
+      ["서윤","아빠 김밥이 제일 컸어! 친구들이 다 한 입만 달래."]]},
+    {t:"“사서 가면 안 될까. 아빠가 서툴러서.”",d:0,r:[
+      ["서윤","…응, 괜찮아."],
+      ["","괜찮다는 그 얼굴이 밤새 눈에 밟혔다. 결국 새벽 네 시, 나는 김을 꺼냈다."],
+      ["서윤","어? 아빠가 쌌어? …터졌는데 맛있어."]]}
+  ]},
+  ["","그날 회사에는 십 분 지각했고, 빌드는 점심때가 되어서야 올라갔다."],
+  ["","팀장은 한숨을 쉬었지만, 나는 이상하게 후회가 없었다."],
+  {bg:"yard"},
+  ["","주말이면 부모님 댁으로 갔다. 혼자서는 도저히 굴러가지 않는 날들이었다."],
+  ["어머니","얼굴이 반쪽이 됐네. 밥은 먹고 다니냐."],
+  ["아버지","애는 우리가 볼 테니 눈 좀 붙여라. 혼자 다 지려고 하면 허리부터 나간다."],
+  ["정우","죄송해요. 다 큰 자식이 아직도 손을 벌려서."],
+  ["어머니","벌리라고 있는 게 부모 손이다."],
+  {c:[
+    {t:"“고맙습니다. 좀 기댈게요.”",d:1,r:[["어머니","그래. 그 말이 듣고 싶었다."]]},
+    {t:"“금방 혼자 설게요.”",d:0,r:[["아버지","혼자 서는 건 천천히 해도 된다. 넘어지지만 마라."]]}
+  ]},
+  ["","눈을 떠 보니 해가 기울어 있었다. 석 달 만에 꿈도 없이 잔 잠이었다."],
+  ["아버지","서윤이가 너 깰까 봐 발뒤꿈치를 들고 다니더라."],
+  ["","서윤이는 마루에 엎드려 그림을 그리고 있었다. 커다란 손이 작은 손을 잡고 있는 그림."],
+  ["서윤","이건 아빠 손이야. 손목 보호대도 그렸어."],
+  ["정우","손이 왜 이렇게 커?"],
+  ["서윤","아빠 손은 원래 커. 내 손이 다 들어가잖아."],
+  ["","그 그림은 그 뒤로 십삼 년 동안 내 모니터 옆에 붙어 있게 된다."],
+
+  {bg:"kitchen"},{ch:2,t:"제2장  간사이행 7시 40분"},
+  ["","시간은 마감과 마감 사이로 흘러갔다."],
+  ["","초등학교 운동회. 학부모 달리기에서 나는 꼴찌를 했고, 서윤이는 꼴찌 한 아빠를 그려 상을 받았다."],
+  ["","중학생이 된 서윤이는 방문을 닫기 시작했다. 나는 문 앞에 깎은 과일을 두고 돌아섰다. 접시는 늘 비어서 나왔다."],
+  ["","고등학교 때는 미술학원비 때문에 주말마다 외주 일을 받았다. 서윤이는 모르는 줄 알았다."],
+  {bg:"desk"},
+  ["","십삼 년이 지났다. 나는 작은 게임 회사 ‘스튜디오 달빛’의 프로그램 팀장이 되었고, 서윤이는 스무 살이 되었다."],
+  ["","새벽 두 시. 서윤이 방에 아직 불이 켜져 있다."],
+  ["정우","아직 안 자? 코코아 타 왔다."],
+  ["서윤","아빠, 나… 붙었어. 교토에 있는 예술대학. 캐릭터 디자인 전공."],
+  ["서윤","근데 안 갈까 봐. 학비도 그렇고, 아빠 혼자 두고 가는 것도 그렇고."],
+  ["서윤","아빠가 주말마다 외주 한 거, 나 다 알아. 학원비 때문인 것도."],
+  {c:[
+    {t:"“가. 아빠는 걱정 말고.”",d:0,r:[["서윤","…아빠는 맨날 그런 식이야. 자기 얘기는 하나도 안 하고."],["서윤","알았어. 갈게. 대신 나중에 내 얘기 다 들어 줘야 해."]]},
+    {t:"“솔직히 아빠도 무섭다. 그래도 가.”",d:1,r:[["서윤","아빠가 무섭다고 말한 거 처음 들어."],["서윤","…그러니까 더 가야겠다. 잘 돼서 올게."]]}
+  ]},
+  ["서윤","아빠, 나 가서 그릴 게 있어. 오래전부터 그리고 싶었던 거."],
+  ["정우","뭔데?"],
+  ["서윤","아직 비밀. 완성되면 제일 먼저… 아니다, 제일 나중에 보여 줄게."],
+  {bg:"airport"},
+  ["","인천공항 출국장. 캐리어보다 화구 가방이 더 크다."],
+  ["서윤","아빠, 나 없는 동안 연애도 좀 해. 진짜야."],
+  ["정우","아빠 걱정은 말고. 밥이나 잘 챙겨 먹어."],
+  ["서윤","나 캐릭터 그리는 사람 될 거야. 보는 사람 마음이 따뜻해지는 캐릭터."],
+  ["서윤","첫 번째 모델은 이미 정했어. 비밀이지만."],
+  ["","서윤이는 한 번도 뒤돌아보지 않고 들어갔다. 돌아보면 울 걸 아는 애라서."],
+  ["","집에 돌아오니 식탁에 쪽지가 한 장 있었다. ‘아빠 김밥이 세상에서 제일 맛있었어.’"],
+  ["","둘이 살던 집은 혼자 살기에는 너무 조용했다. 그날 밤 나는 처음으로 서윤이 방에 불을 켜 두고 잤다."],
+  ["","교토에서는 일요일 밤마다 사진이 왔다. 기숙사 창밖, 학교 앞 강, 연필 깎은 부스러기."],
+  ["","그리고 늘 같은 한 줄. ‘아빠 밥 먹었어?’"],
+
+  {bg:"cafe"},{ch:3,t:"제3장  세 번의 거절"},
+  ["","딸의 말대로, 용기를 내 보기로 했다."],
+  ["","첫 번째. 지인 소개로 만난 사람."],
+  ["정우","저는 게임 만드는 일을 합니다. 그리고 딸이 하나 있어요. 지금 교토에서 그림을 공부합니다."],
+  ["소개팅 상대","좋은 분 같으세요. 그런데 다 큰 따님이 있다는 게, 저한테는 좀 무겁네요."],
+  ["","두 번째. 사내 보드게임 모임에서 만난 사람. 세 번 같이 밥을 먹었고, 답장은 점점 느려지다 끊겼다."],
+  ["","세 번째. 석 달을 만난 사람. 나는 처음으로 서윤이 얘기를 길게 했고, 그 사람은 끝까지 들어 주었다. 그래서 더 기대했다."],
+  ["그 사람","정우 씨는 너무 착해요. 그게… 설레지는 않아요."],
+  {bg:"street"},
+  ["정우","(착하다는 말이 이렇게 아플 수도 있구나.)"],
+  ["정우","(내가 부족해서 아내도 떠났던 걸까. 나는 결국 누구에게도 선택받지 못하는 사람일까.)"],
+  {c:[
+    {t:"“…내 탓이지. 내가 모자라서.”",d:-1,r:[["","편의점 유리에 비친 얼굴이 낯설게 늙어 보였다."]]},
+    {t:"“그래도 내일 출근은 해야지.”",d:1,r:[["","할 수 있는 건, 오늘 하던 일을 내일도 하는 것뿐이었다."]]}
+  ]},
+  ["","그날 밤 서윤이에게서 사진이 왔다. 가모가와 강변의 벚꽃. ‘아빠 밥 먹었어?’"],
+  ["정우","(먹었다고 답했다. 거짓말이었다.)"],
+  {bg:"office"},
+  ["","마음이 바닥이어도 몸은 하던 대로 움직였다."],
+  ["박민호","팀장님, 어젯밤에 제 브랜치 봐 주고 가셨죠? 사흘 못 잡던 버그가 고쳐져 있던데요."],
+  ["정우","지나가다 봤어. 별거 아니야."],
+  ["","건물 청소 여사님의 고장 난 카트 바퀴를 고쳐 드리고, 야근하는 막내의 저녁을 사 두었다. 늘 하던 대로."],
+  ["","신입 기획자가 회의에서 깨지고 온 날에는, 말없이 자판기 커피를 책상에 올려 두었다."],
+  ["","그런데 이상한 일이 생기기 시작했다."],
+  ["박민호","이번 주말에 저희 풋살 하는데 오실래요? 다들 팀장님 오셨으면 한대요."],
+  ["","옆 팀 팀장이 굳이 나를 찾아와 밥을 샀고, 처음 보는 손님이 ‘혹시 한정우 씨 맞으시죠?’ 하며 웃었다."],
+  ["박민호","팀장님은 왜 맨날 남 일만 해 주세요?"],
+  ["정우","내 일은 다 했으니까."],
+  ["박민호","(작게) …진짜 책이랑 똑같네."],
+  ["정우","뭐라고?"],
+  ["박민호","아무것도 아니에요!"],
+  {bg:"book"},
+  ["","퇴근길 골목 책방 ‘쉼표’. 교토로 부칠 책을 고르는 동안, 주인 윤지수 씨는 늘 따뜻한 보리차를 내주었다."],
+  ["지수","오늘도 따님한테 보낼 책이에요? 인터넷으로 주문하셔도 되는데."],
+  ["정우","딸이 읽을 책은 제 손으로 골라야 마음이 놓여서요."],
+  ["지수","…역시 그런 분이시네요."],
+  ["정우","네?"],
+  ["지수","아니에요. 보리차 식어요."],
+  ["지수","따님은 어떤 그림을 그려요?"],
+  ["정우","사람을 그려요. 어릴 때는 제 손만 그렸는데, 실제보다 훨씬 크게 그렸어요."],
+  ["지수","…실제보다 크지 않았을 수도 있어요."],
+  {c:[
+    {t:"“저… 다음엔 제가 차 한 잔 사도 될까요?”",d:1,r:[["지수","좋아요. 대신 거절당할 준비는 하지 마세요. 안 할 거니까."],["정우","(어떻게 알았지. 내가 거절부터 준비한다는 걸.)"]]},
+    {t:"(말을 삼킨다) “…잘 마셨습니다.”",d:0,r:[["지수","정우 씨. 다음엔 제가 차 살게요. 도망가지 마세요."],["정우","(왜 다들 나한테 이렇게 잘해 주지. 동정일까.)"]]}
+  ]},
+  {bg:"street"},
+  ["","사람들이 모여들수록 오히려 불안해졌다. 나는 그대로인데. 대체 왜."],
+  ["정우","(다들 뭔가 착각하고 있는 거다. 내가 어떤 사람인지 알면 실망할 텐데.)"],
+  {c:[
+    {t:"(서윤이에게 전화한다) “아빠가 요즘 좀 이상해.”",d:1,r:[
+      ["서윤","이상한 게 아니라 이제야 정상인 거야. 아빠, 조금만 기다려. 곧 알게 돼."],
+      ["정우","뭘?"],
+      ["서윤","비밀. 끊어, 나 마감이야!"]]},
+    {t:"(혼자 삼킨다)",d:0,r:[
+      ["","휴대폰을 들었다가 내려놓았다. 걱정시키고 싶지 않았다."],
+      ["","그때 문자가 왔다. ‘아빠, 조금만 기다려. 곧 좋은 일 있어.’"],
+      ["정우","(얘는 어떻게 맨날 타이밍이 이럴까.)"]]}
+  ]},
+
+  {bg:"office"},{ch:4,t:"제4장  신규 프로젝트"},
+  ["","금요일 오후, 대표가 전 직원을 회의실로 불렀다."],
+  ["대표","큰 계약을 하나 땄습니다. 일본에서 삼십만 부가 팔린 일러스트 에세이를 비주얼 노벨로 만듭니다."],
+  ["대표","원작자가 우리 회사를 직접 지목했어요."],
+  ["정우","우리를요? 왜죠?"],
+  ["대표","그건… 한 팀장이 원작을 보면 알 겁니다."],
+  ["","회의실의 모두가 나를 보며 웃음을 참고 있었다."],
+  {bg:"proof"},
+  ["","금요일 밤. 민호가 원작 자료를 들고 내 자리로 왔다."],
+  ["박민호","팀장님. 이 원작 자료는… 팀장님이 직접 보셔야 할 것 같아요."],
+  ["","민호가 눈을 피한다. 나는 원작 책의 첫 장을 넘겼다.","page"],
+  ["","표지. 커다란 손이 작은 손을 잡고 있는 그림. 손목 보호대까지 그려져 있다."],
+  ["","제목 <우리 아빠>. 글·그림 한서윤."],
+  ["정우","…서윤이?"],
+  ["","1화 ‘옆구리 터진 김밥’. 2화 ‘새벽 네 시의 부엌 불빛’. 3화 ‘아빠는 무섭다고 말한 적이 없다’."],
+  ["책","중학생 때 나는 방문을 닫았다. 문 앞에는 매일 깎은 과일이 놓여 있었다. 그 접시가 내 사춘기의 전부다."],
+  ["책","아빠는 주말마다 몰래 외주를 했다. 내 학원비였다. 나는 모르는 척했고, 대신 아빠의 등을 백 장쯤 그렸다."],
+  ["책","우리 아빠는 세 번 차였다. 착해서 설레지 않는대."],
+  ["책","나는 그 말을 한 사람들이 안됐다. 세상에서 제일 설레는 건, 매일 같은 자리에 있어 주는 사람인데."],
+  ["","페이지마다 내가 있었다. 꼴찌로 달리는 나, 문 앞에 접시를 내려놓는 나, 공항에서 손을 흔드는 나."],
+  ["","내가 한 번도 본 적 없는, 나의 뒷모습들."],
+  ["정우","민호야. 너… 알고 있었어?"],
+  ["박민호","저희 다 읽었어요, 원서로. 대표님도, 쉼표 사장님도요. 주인공 얼굴이 팀장님이랑 똑같잖아요."],
+  ["박민호","근데요, 책 때문에 좋아하게 된 건 아니에요. 책을 읽고 팀장님을 다시 봤더니, 책이 전부 진짜였던 거죠."],
+  {c:[
+    {t:"(책을 끌어안는다)",d:2,r:[["","마흔일곱 해 만에 소리 내어 울었다. 부끄럽지 않았다."]]},
+    {t:"“…일정부터 잡자. 딸 작품인데 버그 나면 안 되지.”",d:2,r:[["","그렇게 말해 놓고, 모니터 글자가 번져 한 줄도 보이지 않았다. 민호가 조용히 휴지를 밀어 주었다."]]}
+  ]},
+  {bg:"call"},
+  ["서윤","아빠! 들켰어? 게임 발표 때까지 비밀로 하려고 했는데."],
+  ["서윤","게임으로 만들 거면 꼭 아빠 회사여야 한다고 내가 우겼어."],
+  ["정우","왜 말 안 했어."],
+  ["서윤","아빠는 칭찬하면 도망가잖아. 그래서 도망 못 가게 삼십만 명한테 먼저 말했어."],
+  ["서윤","아빠는 선택 못 받은 사람이 아니야. 내가 매일 골랐어. 다시 태어나도 아빠 딸 할 거라고."],
+  {c:[
+    {t:"“아빠가… 사랑받고 있었구나.”",d:1,r:[["서윤","이제 알았어? 느려, 진짜."]]},
+    {t:"“고맙다. 그리고 미안하다, 몰라봐서.”",d:1,r:[["서윤","미안은 빼. 고맙다만 받을게."]]}
+  ]},
+  ["서윤","그리고 아빠. 책방 사장님한테 잘해. 그분, 일본어판 나오자마자 한국에서 제일 먼저 주문한 사람이야. 독자 엽서도 보내 주셨어."],
+  ["정우","…지수 씨가?"],
+  ["서윤","이름도 알아? 진도 빠르네!"],
+  ["","그날 밤 집에 와서 십삼 년 만에 김밥을 말았다. 이번에도 옆구리가 터졌다. 사진을 찍어 서윤이에게 보냈다."],
+  ["서윤","(문자) 여전하네. 그래서 좋아."],
+  ["","그날 이후 나는 거울 앞에서 어깨를 폈다. 달라진 건 세상이 아니라, 내가 나를 보는 눈이었다."],
+
+  {bg:"office"},{ch:5,t:"제5장  우리 아빠, 그 후"},
+  ["","요즘 스튜디오 달빛에서 가장 크게 웃는 사람은 나다."],
+  ["박민호","팀장님, 휘파람 좀 그만요. 키보드 소리보다 커요."],
+  ["","게임 <우리 아빠>의 개발이 시작됐다. 나는 내 인생을 코드로 옮기는 이상한 일을 하게 됐다."],
+  ["박민호","팀장님, 여기 선택지요. ‘아빠가 김밥을 싼다 / 사 간다.’ 실제로는 뭘 고르셨어요?"],
+  ["정우","…둘 다 고민했지. 그래서 둘 다 넣는 거야."],
+  {bg:"book"},
+  ["지수","솔직히 말할게요. 처음엔 책 때문에 궁금했어요. 이런 사람이 정말 있나 하고."],
+  ["지수","그런데 비 오는 날, 따님한테 부칠 책 소포를 자기 점퍼로 덮고 우체국으로 뛰어가는 걸 보고 알았어요. 책보다 실물이 더하다는 걸."],
+  ["정우","저는 딸이 있고, 한 번 실패했고, 설레는 사람도 아니래요."],
+  ["지수","저도 한 번 실패했어요. 그리고 저는 지금 설레는데요."],
+  {c:[
+    {t:"“그럼, 정식으로 만나 주세요.”",d:1,r:[["지수","네. 오래 기다렸어요, 그 말."]]},
+    {t:"“…이 행운을 믿어도 될까요.”",d:0,r:[["지수","행운 아니에요. 정우 씨가 십삼 년 동안 쌓은 거예요. 만나요, 우리."]]}
+  ]},
+  ["","우리는 천천히 가까워졌다. 서로의 지난 상처를 숨기지 않고 꺼내 놓았고, 꺼내 놓을수록 가벼워졌다."],
+  ["","지수 씨는 내 김밥을 먹어 보고 한참 웃었다. 옆구리가 터져서가 아니라, 책이랑 똑같아서라고 했다."],
+  ["지수","저도 얘기할 게 있어요. 전남편은 제가 책방 하는 걸 한심해했어요. 돈도 안 되는 걸 왜 하냐고."],
+  ["정우","저는 그 책방 덕분에 매주 숨을 쉬었는데요."],
+  ["지수","…그런 말, 처음 들어요."],
+  ["","서윤이는 영상통화로 지수 씨에게 내 흉을 한 시간 동안 봤다. 둘이 너무 잘 통해서 나는 조금 서운했다."],
+  ["","가을에 게임이 나왔다. 엔딩 크레딧의 ‘프로그래밍’ 옆에 내 이름이, ‘원작’ 옆에 딸의 이름이 나란히 올라갔다."],
+  {bg:"hill"},
+  ["","그해 늦가을. 동네 뒷산에 노을이 내렸다."],
+  ["정우","(반지 상자를 쥔 손에 땀이 찼다. 거절당할 준비부터 하던 예전의 내가 고개를 든다.)"],
+  {c:[
+    {t:"(외워 온 말을 버리고, 솔직하게 말한다)",d:1,r:[["","주머니 속 쪽지를 구겨 넣었다. 서윤이가 봤다면 잘했다고 했을 것이다."]]},
+    {t:"(외워 온 말을 그대로 꺼낸다)",d:0,r:[["정우","지수 씨, 저는… 그러니까 저는…"],["지수","정우 씨. 외운 거 말고, 그냥 말해요."]]}
+  ]},
+  ["정우","지수 씨. 저는 화려한 말은 못 해요. 대신 매일 같은 자리에 있을게요."],
+  ["정우","저랑 결혼해 주세요."],
+  ["지수","그게 세상에서 제일 화려한 말이에요. 좋아요."],
+  {bg:"wed"},
+  ["","봄. 작은 야외 결혼식."],
+  ["어머니","우리 아들, 이제 좀 웃네."],
+  ["아버지","허리 펴고 살아라. 이제 같이 질 사람 있으니."],
+  ["","그때 식장 입구로, 화구 가방을 멘 누군가가 뛰어 들어온다."],
+  ["서윤","아빠! 늦을 뻔했어! 비행기에서 축하 그림 그리다가!"],
+  ["서윤","아빠, 울어?"],
+  ["정우","안 울어."],
+  ["서윤","책에 그릴 거야, 이 얼굴."],
+  ["서윤","저, 이제 뭐라고 불러요?"],
+  ["지수","편한 대로 불러. 나는 네 팬 1호니까."],
+  ["서윤","2권 제목 정했어요. <우리 가족>. 게임 후속작도 아빠가 만들어 줘야 해."],
+  {iff:[["","사진사가 외쳤다. “신랑분이 제일 크게 웃으시네요!” 나는 더 크게 웃었다.","shutter"],
+        ["","사진사가 웃으라고 말하기도 전에, 나는 이미 웃고 있었다.","shutter"]]},
+  ["","사랑받지 못한다고 믿었던 그 긴 시간에도, 나는 줄곧 사랑받고 있었다."],
+  {end:true}
+];
+
+const CAST = [
+  ["한정우","주인공 · 아빠 · 34세→48세","작은 게임 회사의 프로그래머(훗날 프로그램 팀장). 성실하고 남의 버그를 먼저 잡아 주지만 칭찬을 받으면 도망간다. 이혼과 거듭된 거절로 스스로를 ‘선택받지 못한 사람’이라 여긴다."],
+  ["한서윤","딸 · 7세→21세","아빠를 닮아 속이 깊고, 아빠와 달리 할 말은 한다. 교토의 예술대학에서 캐릭터 디자인을 공부하며 일러스트 에세이 <우리 아빠>를 연재해 큰 사랑을 받는다."],
+  ["윤지수","책방 ‘쉼표’ 주인 · 40대 초반","차분하고 관찰력이 좋다. 한 번의 이혼을 겪었다. 책으로 정우를 알았지만 직접 본 모습에 마음이 움직인다."],
+  ["어머니·아버지","정우의 부모","무뚝뚝한 말 속에 다정함이 있다. 어린 서윤을 함께 키우며 아들이 무너지지 않게 받쳐 준다."],
+  ["박민호","후배 프로그래머 · 30대","넉살 좋은 후배. 원서를 가장 먼저 발견하고 주변에 돌린 장본인. 반전의 전달자."],
+];
+const CHAPTERS = [
+  ["옆구리 터진 김밥","상처. 이혼 직후, 마감과 육아에 지친 일상과 부모님의 도움. 딸이 그린 ‘아빠 손’이 반전의 복선."],
+  ["간사이행 7시 40분","성장. 교토 예술대학 합격과 유학. ‘첫 번째 모델은 비밀’이라는 두 번째 복선."],
+  ["세 번의 거절","시련. 거절로 낮아지는 자존감, 그럼에도 이어지는 성실함, 이유 모를 호의들."],
+  ["신규 프로젝트","반전. 회사가 게임화를 맡은 원작이 딸의 책 <우리 아빠>임을 발견. 아빠가 딸의 이야기를 게임으로 만들게 된다."],
+  ["우리 아빠, 그 후","결말. 밝아진 정우, 지수와의 교감과 청혼, 딸이 돌아온 결혼식."],
+];
+
+/* ===== 3. 엔진 ===== */
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let st = {i:0, reply:null, ri:0, heart:3, log:[]};
+const SAVE = "uri-appa-save-2";
+let auto = false, autoT = null;
+let soundOn = false, track = "", lastScene = "", lastSfxKey = "";
+const bgm = new Audio(); bgm.loop = true; bgm.volume = .45;
+function setBgm(id){
+  const t = BGM[id];
+  $("now").textContent = "♪ " + t.name + (t.file ? (soundOn ? " 재생 중" : " · 소리 꺼짐") : " · 음원 준비 전이라 재생되지 않습니다");
+  if(id===track && !bgm.paused === soundOn) return;
+  track = id;
+  if(soundOn && t.file){ if(!bgm.src.endsWith(t.file)) bgm.src = t.file; bgm.play().catch(()=>{}); } else bgm.pause();
+}
+function sfx(id){
+  const f = SFX[id];
+  if(!soundOn || !f || !f.file) return;
+  const a = new Audio(f.file); a.volume = .7; a.play().catch(()=>{});
+}
+const cur = () => st.reply ? st.reply[st.ri] : S[st.i];
+const custom = {};          // 장면별 임시 이미지
+let timer = null, full = "", typing = false, curBg = "kitchen";
+
+function lookBack(key){ for(let k=st.i;k>=0;k--){ if(S[k] && S[k][key]!==undefined) return S[k]; } return null; }
+
+function render(){
+  while(S[st.i].bg) st.i++;
+  const bgNode = lookBack("bg"), chNode = lookBack("ch");
+  curBg = bgNode.bg; paint();
+  const sa = SCENE_AUDIO[curBg]; setBgm(sa[0]);
+  if(curBg!==lastScene){ lastScene=curBg; sfx(sa[1]); }
+  $("chapter").textContent = chNode ? chNode.t.replace(/\s+/," · ") : "";
+  let ticks=""; for(let k=0;k<10;k++) ticks += '<i class="'+(k<st.heart?"on":"")+'"></i>';
+  $("ticks").innerHTML = ticks; $("meter").setAttribute("aria-label","자존감 "+st.heart+" / 10");
+  const node = cur();
+  const who=$("who"), text=$("text"), ch=$("choices"), nx=$("next");
+  if(chNode) $("jump").value = String(chNode.ch);
+  try{ localStorage.setItem(SAVE, JSON.stringify(st)); }catch(e){}
+  if(!Array.isArray(node) && !node.iff) stand(node.c ? "정우" : "");
+  ch.innerHTML=""; text.className="text"; nx.hidden=false; nx.textContent="눌러서 계속 ▼";
+  if(Array.isArray(node)) return say(node);
+  if(node.ch){ who.textContent=""; text.classList.add("ch"); remember("", node.t); once("ch"+node.ch, "chapter"); return type(node.t); }
+  if(node.iff) return say(st.heart>=8 ? node.iff[0] : node.iff[1]);
+  if(node.c){
+    who.textContent="정우"; nx.hidden=true; type("어떻게 할까.");
+    node.c.forEach(o=>{ const b=document.createElement("button"); b.type="button"; b.textContent=o.t;
+      b.onclick=e=>{ e.stopPropagation(); sfx("choice"); remember("선택", o.t); st.heart=Math.max(0,Math.min(10,st.heart+o.d)); st.reply=o.r; st.ri=0; render(); };
+      ch.appendChild(b); });
+    return;
+  }
+  if(node.end){ who.textContent=""; text.classList.add("ch"); nx.hidden=true; type("끝.  함께해 주셔서 고맙습니다.");
+    const b=document.createElement("button"); b.type="button"; b.textContent="처음부터 다시 읽기";
+    b.onclick=e=>{ e.stopPropagation(); restart(); }; ch.appendChild(b); }
+}
+function say(n){
+  const text=$("text");
+  $("who").textContent = n[0]==="책" ? "<우리 아빠>" : n[0];
+  if(n[0]==="") text.classList.add("narr");
+  if(n[0]==="책") text.classList.add("book");
+  if(n[2]) once(n[1], n[2]);
+  stand(n[0]); remember(n[0]==="책" ? "<우리 아빠>" : n[0], n[1]);
+  type(n[1]);
+}
+function once(key, id){ if(key===lastSfxKey) return; lastSfxKey=key; sfx(id); }
+function stand(name){
+  const sp=SPRITE[name], box=$("sprite"), img=$("simg");
+  if(!sp){ box.hidden=true; return; }
+  const chN = lookBack("ch"), src = sp.img(chN ? chN.ch : 1);
+  box.hidden=false; box.style.setProperty("--c", sp.c);
+  if(src){ if(!img.src.endsWith(src)) img.src=src; img.hidden=false; $("bust").hidden=true; } else { img.hidden=true; $("bust").hidden=false; }
+}
+function remember(who, t){
+  const last=st.log[st.log.length-1];
+  if(last && last[0]===who && last[1]===t) return;
+  st.log.push([who,t]); if(st.log.length>80) st.log.shift();
+  if(!$("logbox").hidden) showLog();
+}
+function showLog(){
+  const box=$("logbox");
+  box.innerHTML = st.log.map(l=>"<div>"+(l[0]?"<b>"+esc(l[0])+"</b>":"")+esc(l[1])+"</div>").join("");
+  box.scrollTop = box.scrollHeight;
+}
+function afterType(){
+  clearTimeout(autoT); const n=cur();
+  if(auto && !(n.c||n.end)) autoT=setTimeout(()=>{ if(auto) advance(); }, 1300+full.length*55);
+}
+function type(s){
+  clearInterval(timer); full=s; const el=$("text");
+  if(reduce){ el.textContent=s; typing=false; afterType(); return; }
+  let k=0; typing=true; el.textContent="";
+  timer=setInterval(()=>{ k++; el.textContent=s.slice(0,k); if(k>=s.length){ clearInterval(timer); typing=false; afterType(); } },22);
+}
+function advance(){
+  clearTimeout(autoT);
+  if(typing){ clearInterval(timer); typing=false; $("text").textContent=full; afterType(); return; }
+  const node = S[st.i];
+  if(st.reply){ st.ri++; if(st.ri>=st.reply.length){ st.reply=null; st.ri=0; st.i++; } return render(); }
+  if(node.c || node.end) return;
+  st.i++; render();
+}
+function restart(){ st={i:0,reply:null,ri:0,heart:3,log:[]}; showLog(); render(); }
+
+/* 배경: 이미지가 없을 때 캔버스로 분위기만 그립니다 */
+function paint(){
+  const b=BG[curBg], img=$("shot"), src=custom[curBg]||b.img;
+  $("cap").textContent=b.name; $("ptext").textContent=STYLE+", "+b.p;
+  if(src){ img.src=src; img.hidden=false; $("slot").hidden=true; return; }
+  img.hidden=true; $("slot").hidden=false;
+  const c=$("cv"), x=c.getContext("2d"), W=c.width, H=c.height;
+  let seed=curBg.length*97+b.name.length*13; const rnd=()=>{ seed=(seed*16807)%2147483647; return seed/2147483647; };
+  const g=x.createLinearGradient(0,0,0,H); g.addColorStop(0,b.sky[0]); g.addColorStop(1,b.sky[1]); x.fillStyle=g; x.fillRect(0,0,W,H);
+  const lx=b.light[0]*W, ly=b.light[1]*H, kind=b.light[2];
+  const glow=x.createRadialGradient(lx,ly,10,lx,ly,360); glow.addColorStop(0,"rgba(244,183,64,.75)"); glow.addColorStop(1,"rgba(244,183,64,0)");
+  x.fillStyle=glow; x.fillRect(0,0,W,H);
+  x.fillStyle="rgba(29,39,66,.10)";                      // 스크린톤
+  for(let yy=8;yy<H;yy+=14) for(let xx=(yy/14%2)*7+4;xx<W;xx+=14){ x.beginPath(); x.arc(xx,yy,1+2.4*yy/H,0,7); x.fill(); }
+  x.fillStyle="#f8dc8a"; x.strokeStyle="#1d2742"; x.lineWidth=5;
+  if(kind==="sun"||kind==="moon"){ x.beginPath(); x.arc(lx,ly,kind==="sun"?58:40,0,7); x.fill(); }
+  if(kind==="window"){ x.fillRect(lx-90,ly-80,180,160); x.strokeRect(lx-90,ly-80,180,160); x.beginPath(); x.moveTo(lx,ly-80); x.lineTo(lx,ly+80); x.moveTo(lx-90,ly); x.lineTo(lx+90,ly); x.stroke(); }
+  if(kind==="lamp"){ x.beginPath(); x.moveTo(lx,0); x.lineTo(lx,ly-30); x.stroke(); x.fillStyle="rgba(248,220,138,.35)"; x.beginPath(); x.moveTo(lx-30,ly); x.lineTo(lx+30,ly); x.lineTo(lx+230,H); x.lineTo(lx-230,H); x.fill(); x.fillStyle="#1d2742"; x.beginPath(); x.moveTo(lx-46,ly); x.lineTo(lx+46,ly); x.lineTo(lx+22,ly-34); x.lineTo(lx-22,ly-34); x.fill(); }
+  if(kind==="page"){ x.save(); x.translate(lx,ly); x.rotate(-.06); x.fillStyle="#f1f3f6"; x.fillRect(-150,-190,300,380); x.strokeRect(-150,-190,300,380); x.fillStyle="#d9634a"; x.beginPath(); x.arc(-20,-40,54,0,7); x.fill(); x.fillStyle="#f4b740"; x.beginPath(); x.arc(40,10,34,0,7); x.fill(); x.fillStyle="#1d2742"; for(let k=0;k<4;k++) x.fillRect(-110,80+k*22,220-k*30,6); x.restore(); }
+  if(kind==="screen"){ x.fillStyle="#f1f3f6"; x.beginPath(); x.roundRect(lx-90,ly-150,180,300,22); x.fill(); x.stroke(); x.fillStyle="#f4b740"; x.beginPath(); x.arc(lx,ly-30,46,0,7); x.fill(); }
+  x.fillStyle="rgba(29,39,66,.78)";                      // 땅, 실루엣
+  x.beginPath(); x.moveTo(0,H); x.lineTo(0,H*.84);
+  for(let xx=0;xx<=W;xx+=60) x.lineTo(xx,H*.84-rnd()*26);
+  x.lineTo(W,H); x.fill();
+  if(b.fx==="rain"){ x.strokeStyle="rgba(241,243,246,.45)"; x.lineWidth=2; for(let k=0;k<110;k++){ const rx=rnd()*W, ry=rnd()*H; x.beginPath(); x.moveTo(rx,ry); x.lineTo(rx-9,ry+26); x.stroke(); } }
+  if(b.fx==="star"){ x.fillStyle="rgba(241,243,246,.8)"; for(let k=0;k<60;k++){ x.beginPath(); x.arc(rnd()*W,rnd()*H*.6,rnd()*2+.6,0,7); x.fill(); } }
+  if(b.fx==="petal"){ for(let k=0;k<70;k++){ x.fillStyle=k%3?"rgba(255,255,255,.85)":"rgba(217,99,74,.55)"; x.beginPath(); x.ellipse(rnd()*W,rnd()*H,9,5,rnd()*3,0,7); x.fill(); } }
+}
+
+/* ===== 4. 기획서·프롬프트 화면 ===== */
+function buildDocs(){
+  $("cast").innerHTML = CAST.map(c=>'<div class="card"><b>'+esc(c[0])+'</b><span>'+esc(c[1])+'</span><p>'+esc(c[2])+'</p></div>').join("");
+  $("chlist").innerHTML = CHAPTERS.map(c=>'<li><b>'+esc(c[0])+'</b> '+esc(c[1])+'</li>').join("");
+  const line = n => '<div class="ln'+(n[0]===""?" n":"")+'">'+(n[0]?'<b>'+esc(n[0]==="책"?"<우리 아빠>":n[0])+'</b>':"")+esc(n[1])+'</div>';
+  $("script").innerHTML = S.map(n=>{
+    if(Array.isArray(n)) return line(n);
+    if(n.ch) return '<h3>'+esc(n.t)+'</h3>';
+    if(n.bg) return '<div class="bg">장면 · '+esc(BG[n.bg].name)+'</div>';
+    if(n.iff) return '<div class="ch-box"><span class="opt">자존감 8 이상</span><div class="rep">'+line(n.iff[0])+'</div><span class="opt">자존감 7 이하</span><div class="rep">'+line(n.iff[1])+'</div></div>';
+    if(n.c) return '<div class="ch-box">'+n.c.map(o=>'<div><span class="opt">▶ '+esc(o.t)+'<em>자존감 '+(o.d>0?"+":"")+o.d+'</em></span><div class="rep">'+o.r.map(line).join("")+'</div></div>').join("")+'</div>';
+    return "";
+  }).join("");
+  $("plan").innerHTML = PLAN.map(r=>'<div class="row"><span class="pill '+r[2]+'">'+({done:"완료",need:"확인 필요",wait:"대기"}[r[2]])+'</span><b>'+r[0]+'. '+esc(r[1])+'</b><p>'+esc(r[3])+'</p></div>').join("");
+  const acard = (o,k,pre) => '<div class="pcard"><header><b>'+esc(o.name)+'</b><span>'+esc(o.use)+' · '+k+'</span></header><div class="prompt" id="'+pre+k+'">'+esc(o.p)+'</div><div><button type="button" class="copy" data-copy="'+pre+k+'">복사</button></div></div>';
+  $("bgmlist").innerHTML = Object.keys(BGM).map(k=>acard(BGM[k],k,"bgm_")).join("");
+  $("sfxlist").innerHTML = Object.keys(SFX).map(k=>acard(SFX[k],k,"sfx_")).join("");
+  $("spstyle").textContent = SP_STYLE;
+  $("splist").innerHTML = SP.map((c,k)=>'<div class="pcard"><b>'+esc(c[0])+'</b><div class="prompt" id="sp'+k+'">'+esc(c[1])+'</div><div><button type="button" class="copy" data-copy="sp'+k+'">복사</button></div></div>').join("");
+  $("jump").innerHTML = S.filter(n=>n.ch).map(n=>'<option value="'+n.ch+'">'+esc(n.t.replace(/\s+/," · "))+'</option>').join("");
+  $("style").textContent = STYLE;
+  $("charp").innerHTML = CHARS.map((c,k)=>'<div class="pcard"><b>'+esc(c[0])+'</b><div class="prompt" id="cp'+k+'">'+esc(c[1])+'</div><div><button type="button" class="copy" data-copy="cp'+k+'">복사</button></div></div>').join("");
+  const firstCh = {}; let ch=0; S.forEach((n,k)=>{ if(n.ch) ch=n.ch; if(n.bg && !firstCh[n.bg]) firstCh[n.bg]=(S[k+1]&&S[k+1].ch)||ch||1; });
+  $("plist").innerHTML = Object.keys(BG).map(k=>'<div class="pcard"><header><b>'+esc(BG[k].name)+'</b><span>'+firstCh[k]+'장 · '+k+'</span></header><div class="prompt" id="pp_'+k+'">'+esc(BG[k].p)+'</div><div><button type="button" class="copy" data-copy="pp_'+k+'">복사</button></div></div>').join("");
+}
+function copyFrom(el, btn){
+  const t = el.textContent, done = ()=>{ const o=btn.textContent; btn.textContent="복사했어요"; setTimeout(()=>btn.textContent=o,1400); };
+  const fallback = ()=>{ const r=document.createRange(); r.selectNodeContents(el); const s=getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent="선택했어요. 길게 눌러 복사하세요"; };
+  try{ navigator.clipboard.writeText(t).then(done, fallback); }catch(e){ fallback(); }
+}
+
+/* ===== 5. 이벤트 ===== */
+$("dialog").addEventListener("click", advance);
+$("dialog").addEventListener("keydown", e=>{ if(e.target===$("dialog") && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); advance(); } });
+$("restart").onclick = restart;
+$("jump").onchange = e=>{ const k=S.findIndex(n=>n.ch===Number(e.target.value)); if(k<0) return; st.i=k; st.reply=null; st.ri=0; render(); };
+$("auto").onclick = ()=>{ auto=!auto; $("auto").setAttribute("aria-pressed", String(auto)); if(auto && !typing) afterType(); else clearTimeout(autoT); };
+$("snd").onclick = ()=>{ soundOn=!soundOn; $("snd").setAttribute("aria-pressed", String(soundOn)); $("snd").textContent = soundOn ? "소리 끄기" : "소리 켜기"; setBgm(SCENE_AUDIO[curBg][0]); };
+$("logbtn").onclick = ()=>{ const b=$("logbox"); b.hidden=!b.hidden; $("logbtn").setAttribute("aria-expanded", String(!b.hidden)); if(!b.hidden) showLog(); };
+$("showp").onclick = ()=>{ const p=$("pbox"); p.hidden=!p.hidden; $("showp").setAttribute("aria-expanded", String(!p.hidden)); };
+$("pcopy").onclick = e => copyFrom($("ptext"), e.currentTarget);
+$("file").onchange = e=>{ const f=e.target.files[0]; if(!f) return; custom[curBg]=URL.createObjectURL(f); paint(); };
+document.addEventListener("click", e=>{ const b=e.target.closest("[data-copy]"); if(b) copyFrom($(b.dataset.copy), b); });
+function route(){
+  const v = ["play","plan","prompts"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "play";
+  ["play","plan","prompts"].forEach(n=>{ $("v-"+n).hidden = n!==v; });
+  document.querySelectorAll("nav a").forEach(a=>{ if(a.dataset.v===v) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+}
+addEventListener("hashchange", route);
+
+function start(saved){
+  if(!(saved && typeof saved.i==="number")){ try{ saved = JSON.parse(localStorage.getItem(SAVE)||"null"); }catch(e){ saved=null; } }
+  if(saved && typeof saved.i==="number" && S[saved.i]){ st = Object.assign(st, saved); if(!Array.isArray(st.log)) st.log=[]; }
+  // 그림 미리 불러오기: 대사가 바뀔 때 앞 그림이 잠깐 남지 않게 합니다.
+  ["jw30","jw40","jwbright","sy7","sy20","jisoo","mom","dad","minho"].forEach(n=>{ new Image().src="images/sp_"+n+".webp"; });
+  Object.values(BG).forEach(b=>{ if(b.img) new Image().src=b.img; });
+  buildDocs(); route(); render();
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(paint);
+}
+window.claude?.hot?.snapshot?.(()=>st);
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+</script>
+</body>
+</html>
