@@ -2539,8 +2539,6 @@ let view = "title", timer = null, full = "", typing = false, typeEl = null;
 let curBg = "", curFx = "", layerOn = "la", locT = null, pendingLoc = "";
 let auto = false, autoT = null, armed = false, lastSfxKey = "", track = "";
 let faceWho = "", faceSrc = "", faceOn = "fa", cardOn = false, endOn = false, bare = false;
-const bgmA = new Audio(), bgmB = new Audio(); bgmA.loop = bgmB.loop = true;
-let bgm = bgmA, fadeT = 0;
 
 /* 입자 효과: 비, 이슬비, 진눈깨비, 폭풍(번개), 눈, 꽃잎, 낙엽, 먼지, 반딧불, 별, 색종이 */
 function FX(canvas, opt){
@@ -2607,33 +2605,66 @@ function FX(canvas, opt){
 }
 const fx = FX($("fx"), {onFlash: lightning}), tfx = FX($("tfx")), efx = FX($("efx"));
 
-/* 소리: 배경음은 1.6초 동안 겹쳐 바꾸고, 비·진눈깨비·폭풍 소리는 브라우저에서 직접 만듭니다 */
-function bgmStop(){ clearInterval(fadeT); bgmA.pause(); bgmB.pause(); }
-function bgmTo(file){
-  const vol = conf.volB/100;
-  if(bgm.src && bgm.src.endsWith(file)){ bgm.volume = vol; if(bgm.paused) bgm.play().catch(()=>{}); return; }
-  const old = bgm, nu = bgm===bgmA ? bgmB : bgmA;
-  clearInterval(fadeT); nu.src = file; nu.volume = 0; nu.play().catch(()=>{}); bgm = nu;
-  if(reduce || old.paused || !old.src){ old.pause(); nu.volume = vol; return; }
-  const ov = old.volume, t0 = Date.now();
-  fadeT = setInterval(()=>{ const k = Math.min(1,(Date.now()-t0)/1600); nu.volume = vol*k; old.volume = ov*(1-k); if(k>=1){ clearInterval(fadeT); old.pause(); } }, 40);
+/* 소리: 곡마다 듣던 자리를 기억해 두고, 바꿀 때는 3초 동안 등전력 곡선으로 겹쳐 넘깁니다.
+   장면이 짧게 오갈 때 음악이 들락거리지 않도록, 직전 전환 뒤 6초 안의 전환은 잠시 미룹니다.
+   비·진눈깨비·폭풍 소리는 고음을 깎은 분홍 소음으로 브라우저에서 만듭니다. */
+const tracks = {};
+let curTrack = null, mixT = 0, lastSwitch = -1e9, pendT = 0;
+function trackOf(file){ if(!tracks[file]){ const a = new Audio(file); a.loop = true; a.preload = "auto"; a.volume = 0; tracks[file] = {a, g:0}; } return tracks[file]; }
+function mixTick(){
+  const now = performance.now(); let busy = false;
+  for(const f in tracks){
+    const t = tracks[f]; if(t.from===undefined) continue;
+    const k = Math.min(1, (now - t.t0) / t.dur);
+    t.g = t.to >= t.from ? t.from + (t.to - t.from)*Math.sin(k*Math.PI/2) : t.to + (t.from - t.to)*Math.cos(k*Math.PI/2);
+    t.a.volume = Math.max(0, Math.min(1, t.g*conf.volB/100));
+    if(k >= 1){ t.from = undefined; if(t.g <= .001){ t.g = 0; t.a.pause(); } } else busy = true;
+  }
+  if(!busy){ clearInterval(mixT); mixT = 0; }
 }
+function fadeTo(t, to, dur){
+  t.from = t.g; t.to = to; t.t0 = performance.now(); t.dur = Math.max(1, dur);
+  if(to > 0 && t.a.paused) t.a.play().catch(()=>{});
+  if(!mixT) mixT = setInterval(mixTick, 30);
+}
+function bgmTo(file, dur){
+  dur = reduce ? 1 : (dur || 3000);
+  const nu = trackOf(file);
+  if(curTrack===nu){ if(nu.to!==1 || nu.a.paused) fadeTo(nu, 1, 800); return; }
+  for(const f in tracks){ const t = tracks[f]; if(t!==nu && (t.g>0 || t.from!==undefined)) fadeTo(t, 0, dur*1.15); }
+  fadeTo(nu, 1, dur); curTrack = nu; lastSwitch = performance.now();
+}
+function bgmStop(dur){ clearTimeout(pendT); for(const f in tracks){ const t = tracks[f]; if(t.g>0 || t.from!==undefined) fadeTo(t, 0, reduce ? 1 : (dur || 1800)); } curTrack = null; }
+function bgmVol(){ for(const f in tracks){ const t = tracks[f]; t.a.volume = Math.max(0, Math.min(1, t.g*conf.volB/100)); } }
+function bgmWake(){ if(curTrack && curTrack.a.paused && conf.sound && view==="play") curTrack.a.play().catch(()=>{}); }
 function setBgm(id){
   const t = BGM[id]; if(!t) return;
   $("sndNow").textContent = "♪ " + t.name;
-  if(conf.sound && view==="play" && !endOn){ track = id; bgmTo(t.file); }
-  else bgmStop();
+  clearTimeout(pendT);
+  if(!(conf.sound && view==="play" && !endOn)){ bgmStop(); return; }
+  track = id;
+  const want = trackOf(t.file), wait = 6000 - (performance.now() - lastSwitch);
+  if(curTrack && curTrack!==want && wait > 0) pendT = setTimeout(()=>{ if(track===id && conf.sound && view==="play" && !endOn) bgmTo(t.file); }, wait);
+  else bgmTo(t.file);
 }
 let actx = null, ambN = null, ambType = "";
-const AMB = {rain:[300,2400,.16], drizzle:[900,3400,.07], sleet:[220,1700,.12], storm:[70,1200,.24]};
+// [하한 Hz, 상한 Hz, 크기]: 상한을 낮춰 쉿 하는 고음을 줄였습니다.
+const AMB = {rain:[110,1500,.13], drizzle:[220,1800,.06], sleet:[100,1150,.1], storm:[60,950,.19]};
 function ac(){ try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==="suspended") actx.resume(); }catch(e){ actx = null; } return actx; }
 function noise(sec, brown){
-  const len = Math.round(actx.sampleRate*sec), buf = actx.createBuffer(1, len, actx.sampleRate), d = buf.getChannelData(0); let last = 0;
-  for(let i=0;i<len;i++){ const w = Math.random()*2-1; if(brown){ last = (last + .02*w)/1.02; d[i] = last*3.2; } else d[i] = w; }
+  const len = Math.round(actx.sampleRate*sec), buf = actx.createBuffer(1, len, actx.sampleRate), d = buf.getChannelData(0);
+  let last = 0, b0 = 0, b1 = 0, b2 = 0;
+  for(let i=0;i<len;i++){
+    const w = Math.random()*2-1;
+    if(brown){ last = (last + .02*w)/1.02; d[i] = last*3.2; }
+    else { b0 = .99765*b0 + w*.099046; b1 = .963*b1 + w*.2965164; b2 = .57*b2 + w*1.0526913; d[i] = (b0 + b1 + b2 + w*.1848)*.22; }
+  }
+  const f = Math.min(len, Math.round(actx.sampleRate*.25));   // 반복 이음매가 튀지 않게 끝을 앞과 섞습니다
+  for(let i=0;i<f;i++){ const k = i/f; d[len-f+i] = d[len-f+i]*(1-k) + d[i]*k; }
   return buf;
 }
 function ambStop(){
-  if(ambN){ const n = ambN; try{ n.g.gain.setTargetAtTime(0, actx.currentTime, .35); }catch(e){} setTimeout(()=>{ try{ n.src.stop(); }catch(e){} }, 1600); }
+  if(ambN){ const n = ambN; try{ n.g.gain.setTargetAtTime(0, actx.currentTime, .8); }catch(e){} setTimeout(()=>{ try{ n.src.stop(); }catch(e){} }, 4000); }
   ambN = null; ambType = "";
 }
 function amb(f){
@@ -2643,32 +2674,35 @@ function amb(f){
   if(!want || !conf.sound || !conf.volS || view!=="play" || !ac()) return;
   try{
     const [hz, lz, lvl] = AMB[want];
-    const src = actx.createBufferSource(); src.buffer = noise(2.5, false); src.loop = true;
+    const src = actx.createBufferSource(); src.buffer = noise(4, false); src.loop = true;
     const hp = actx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = hz;
-    const lp = actx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = lz;
+    const lp = actx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = lz; lp.Q.value = .5;
+    const sh = actx.createBiquadFilter(); sh.type = "highshelf"; sh.frequency.value = 1000; sh.gain.value = -6;
     const g = actx.createGain(); g.gain.value = 0;
-    src.connect(hp); hp.connect(lp); lp.connect(g); g.connect(actx.destination); src.start();
-    g.gain.setTargetAtTime(lvl*conf.volS/100, actx.currentTime, .9);
+    src.connect(hp); hp.connect(lp); lp.connect(sh); sh.connect(g); g.connect(actx.destination); src.start();
+    g.gain.setTargetAtTime(lvl*conf.volS/100, actx.currentTime, 1.4);
     ambN = {src, g, lvl};
   }catch(e){}
 }
-function ambVol(){ if(ambN && actx){ try{ ambN.g.gain.setTargetAtTime(ambN.lvl*conf.volS/100, actx.currentTime, .2); }catch(e){} } }
+function ambVol(){ if(ambN && actx){ try{ ambN.g.gain.setTargetAtTime(ambN.lvl*conf.volS/100, actx.currentTime, .3); }catch(e){} } }
 function lightning(){
   if(view!=="play" || reduce) return;
   const l = $("ltn"); l.classList.remove("go"); void l.offsetWidth; l.classList.add("go");
   if(!conf.sound || !conf.volS || !ac()) return;
   setTimeout(()=>{ try{
     const src = actx.createBufferSource(); src.buffer = noise(3, true);
-    const lp = actx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 180;
-    const g = actx.createGain(), now = actx.currentTime, v = .9*conf.volS/100;
-    g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(v, now+.08); g.gain.exponentialRampToValueAtTime(.001, now+2.8);
+    const lp = actx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 160;
+    const g = actx.createGain(), now = actx.currentTime, v = .75*conf.volS/100;
+    g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(v, now+.25); g.gain.exponentialRampToValueAtTime(.001, now+2.9);
     src.connect(lp); lp.connect(g); g.connect(actx.destination); src.start(); src.stop(now+3);
   }catch(e){} }, 300 + Math.random()*900);
 }
+// 효과음마다 크기를 따로 맞춥니다(높고 날카로운 소리는 작게).
+const SFXV = {bell:.75, shutter:.7, keys:.6, chapter:.7, ring:.8, page:1, choice:.9, airport:.8};
 function sfx(id){
   const f = SFX[id];
   if(!conf.sound || view!=="play" || !f || !f.file || !conf.volS) return;
-  const a = new Audio(f.file); a.volume = conf.volS/100; a.play().catch(()=>{});
+  const a = new Audio(f.file); a.volume = Math.min(1, conf.volS/100*(SFXV[id]||1)); a.play().catch(()=>{});
 }
 function once(key, id){ if(key===lastSfxKey) return; lastSfxKey=key; sfx(id); effect(id); }
 function effect(id){
@@ -2996,6 +3030,7 @@ function buildFaces(){
 /* ===== 4. 입력과 화면 전환 ===== */
 $("game").addEventListener("click", e => {
   if(actx && actx.state==="suspended") actx.resume();
+  bgmWake();
   if(ambType && ambType!=="-" && !ambN){ const f = ambType; ambType = "-"; amb(f); }
   if(e.target.closest(".gear,.choices,.ending")) return;
   advance();
@@ -3027,7 +3062,7 @@ $("bareBtn").onclick = () => { $("menu").hidden = true; setBare(true); };
 $("full").onclick = () => { try{ const p = document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); p && p.catch(()=>{ $("full").querySelector("small").textContent = "이 화면에서는 쓸 수 없습니다"; }); }catch(e){ $("full").querySelector("small").textContent = "이 화면에서는 쓸 수 없습니다"; } };
 $("snd").onclick = () => { conf.sound = !conf.sound; store(CONF, conf); drawMenu(); if(view==="play"){ setBgm((SCENE_AUDIO[curBg]||["warm"])[0]); ambType = "-"; amb(curFx); } };
 $("speedSeg").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return; conf.speed = Number(b.dataset.s); store(CONF, conf); drawMenu(); });
-$("volB").oninput = e => { conf.volB = Number(e.target.value); bgm.volume = conf.volB/100; store(CONF, conf); };
+$("volB").oninput = e => { conf.volB = Number(e.target.value); bgmVol(); store(CONF, conf); };
 $("volS").oninput = e => { conf.volS = Number(e.target.value); store(CONF, conf); ambVol(); };
 $("volS").onchange = () => { if(view==="play") sfx("choice"); };
 $("jump").onchange = e => { const v = Number(e.target.value); if(v>maxCh) return; const k = S.findIndex(n=>n.ch===v); if(k<0) return; st.i = k; st.reply = null; st.ri = 0; st.obg = null; closeMenu(); cardOn = false; render(); };
