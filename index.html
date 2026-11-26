@@ -97,6 +97,47 @@ h1 span{display:inline-block;clip-path:inset(0 100% 0 0);animation:write 1.5s .3
 }
 @keyframes pan{from{object-position:var(--px0,22%) 50%;transform:scale(1.02)}to{object-position:var(--px1,78%) 50%;transform:scale(1.06)}}
 #game.shake .scene{animation:shake .38s}
+/* 감정 연출: 말하는 사람의 표정에 따라 장면 그림의 빛과 색, 효과가 바뀝니다 */
+.scene .layer img{transition:filter 1.4s ease}
+.mood{position:absolute;inset:0;pointer-events:none}
+.mood i{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease}
+.mood i[data-m=blue]{background:radial-gradient(ellipse at 50% 42%,transparent 34%,rgba(16,30,70,.6)),linear-gradient(rgba(70,105,170,.18),rgba(40,60,120,.24))}
+.mood i[data-m=warm]{background:radial-gradient(ellipse at 50% 26%,rgba(255,196,118,.34),transparent 62%),radial-gradient(ellipse at 50% 52%,transparent 58%,rgba(120,58,18,.28))}
+.mood i[data-m=joy]{background:radial-gradient(ellipse at 50% 22%,rgba(255,246,214,.3),transparent 60%)}
+.mood i[data-m=ang]{background:radial-gradient(ellipse at 50% 46%,transparent 38%,rgba(165,22,12,.55))}
+.mood i[data-m=emb]{background:radial-gradient(ellipse at 50% 50%,transparent 46%,rgba(255,112,152,.36))}
+.mood i[data-m=dim]{background:radial-gradient(ellipse at 50% 44%,transparent 36%,rgba(8,10,26,.62))}
+.mood i[data-m=think]{background:radial-gradient(ellipse at 50% 44%,transparent 48%,rgba(20,26,52,.42))}
+.mood i[data-m=ser]{background:radial-gradient(ellipse at 50% 46%,transparent 52%,rgba(6,8,18,.4))}
+#game[data-mood=blue] .mood i[data-m=blue],#game[data-mood=warm] .mood i[data-m=warm],#game[data-mood=joy] .mood i[data-m=joy],#game[data-mood=ang] .mood i[data-m=ang],#game[data-mood=emb] .mood i[data-m=emb],#game[data-mood=dim] .mood i[data-m=dim],#game[data-mood=think] .mood i[data-m=think],#game[data-mood=ser] .mood i[data-m=ser]{opacity:1}
+#game[data-mood=blue] .scene .layer img{filter:saturate(.55) brightness(.86) contrast(.96)}
+#game[data-mood=warm] .scene .layer img{filter:saturate(1.1) brightness(1.05) sepia(.14)}
+#game[data-mood=joy] .scene .layer img{filter:saturate(1.16) brightness(1.06)}
+#game[data-mood=ang] .scene .layer img{filter:saturate(1.2) contrast(1.1)}
+#game[data-mood=dim] .scene .layer img{filter:brightness(.8) saturate(.78)}
+#game[data-mood=think] .scene .layer img{filter:brightness(.92) saturate(.9)}
+#game[data-mood=ser] .scene .layer img{filter:contrast(1.12) saturate(.8)}
+@media (prefers-reduced-motion:no-preference){#game[data-mood=ang] .mood i[data-m=ang]{animation:throb 1.7s ease-in-out infinite}}
+@keyframes throb{50%{opacity:.5}}
+.burst{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+@media (max-aspect-ratio:4/5){.burst{bottom:auto;height:66%}}
+.burst b{position:absolute;display:block}
+.burst .sp{width:var(--z);height:var(--z);background:#fff7cf;clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);filter:drop-shadow(0 0 6px #ffe9a0);opacity:0;animation:twinkle 1.4s ease-out forwards}
+@keyframes twinkle{0%{opacity:0;transform:scale(.2) rotate(0)}30%{opacity:1;transform:scale(1.1) rotate(25deg)}100%{opacity:0;transform:scale(.6) rotate(70deg) translateY(-10px)}}
+.burst .bk{width:var(--z);height:var(--z);border-radius:50%;background:radial-gradient(rgba(255,214,150,.75),rgba(255,190,110,.28) 55%,transparent 72%);opacity:0;animation:bokeh var(--d,3.6s) ease-out forwards}
+@keyframes bokeh{0%{opacity:0;transform:translateY(20px) scale(.7)}30%{opacity:.9}100%{opacity:0;transform:translateY(-90px) scale(1.15)}}
+.burst .dr{width:var(--z);height:calc(var(--z)*1.3);border-radius:50% 50% 50% 50%/60% 60% 42% 42%;background:radial-gradient(circle at 38% 34%,rgba(255,255,255,.95) 0 14%,rgba(190,220,255,.4) 32%,rgba(140,180,240,.12) 70%);box-shadow:0 0 0 1px rgba(255,255,255,.35) inset;opacity:0;animation:drip var(--d,2.6s) ease-in forwards}
+@keyframes drip{0%{opacity:0;transform:translateY(0)}15%{opacity:.95}70%{opacity:.8}100%{opacity:0;transform:translateY(130px) scaleY(1.25)}}
+.burst .pf{width:var(--z);height:var(--z);border-radius:50%;background:radial-gradient(rgba(255,255,255,.95),rgba(255,226,236,.7) 50%,transparent 72%);opacity:0;animation:puff 1.2s ease-out forwards}
+@keyframes puff{0%{opacity:0;transform:scale(.3)}25%{opacity:1}100%{opacity:0;transform:translate(var(--x,0),-46px) scale(1.4)}}
+.burst .sl{inset:-20%;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.0) 0 5deg,rgba(255,255,255,.75) 5.4deg 6.2deg,rgba(255,255,255,0) 6.6deg 11deg);-webkit-mask-image:radial-gradient(circle,transparent 30%,#000 62%);mask-image:radial-gradient(circle,transparent 30%,#000 62%);opacity:0;animation:lines .75s ease-out forwards}
+.burst .sl.red{background:repeating-conic-gradient(from 3deg,rgba(255,60,40,0) 0 6deg,rgba(220,40,30,.55) 6.4deg 7.4deg,rgba(255,60,40,0) 7.8deg 13deg)}
+@keyframes lines{0%{opacity:0;transform:scale(1.2)}20%{opacity:1}100%{opacity:0;transform:scale(1)}}
+.burst .fl{inset:0;background:radial-gradient(circle,rgba(255,255,255,.75),rgba(255,255,255,.2));opacity:0;animation:flash .5s ease-out}
+.burst .tb{inset:0;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);background:rgba(120,150,210,.08);opacity:0;animation:teary 2.6s ease-in-out forwards}
+@keyframes teary{30%,65%{opacity:1}100%{opacity:0}}
+#game.punch .scene{animation:punch .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes punch{30%{transform:scale(1.045)}}
 @keyframes shake{20%{transform:translate(-5px,2px)}40%{transform:translate(4px,-2px)}60%{transform:translate(-3px,1px)}80%{transform:translate(2px,0)}}
 
 .loc{position:absolute;top:calc(14px + var(--safe-t));left:0;font-family:var(--display);font-size:clamp(22px,3.4vh,30px);line-height:1;color:var(--paper);background:rgba(16,22,43,.6);padding:8px 18px 6px 16px;border-left:5px solid var(--lamp);border-radius:0 4px 4px 0;transform:translateX(-110%);transition:transform .7s cubic-bezier(.2,.9,.2,1);pointer-events:none;max-width:70%}
@@ -348,8 +389,10 @@ ol.chs{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px;ma
   <div class="scene" id="scene">
     <div class="layer" id="la"><img alt=""></div>
     <div class="layer" id="lb"><img alt=""></div>
+    <div class="mood" aria-hidden="true"><i data-m="blue"></i><i data-m="warm"></i><i data-m="joy"></i><i data-m="ang"></i><i data-m="emb"></i><i data-m="dim"></i><i data-m="think"></i><i data-m="ser"></i></div>
   </div>
   <canvas id="fx" aria-hidden="true"></canvas>
+  <div class="burst" id="burst" aria-hidden="true"></div>
   <div class="ltn" id="ltn"></div>
   <div class="loc" id="loc" aria-live="polite"></div>
   <span class="badge" id="badge" hidden data-i="autoBadge">자동</span>
@@ -458,6 +501,7 @@ ol.chs{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px;ma
     <div class="field"><span lang="ko">언어 · <span lang="en">Language</span> · <span lang="ja">言語</span></span><div class="seg" id="langSeg"><button type="button" class="pillbtn" data-l="ko" lang="ko">한국어</button><button type="button" class="pillbtn" data-l="en" lang="en">English</button><button type="button" class="pillbtn" data-l="ja" lang="ja">日本語</button></div></div>
     <div class="grid2">
       <button type="button" class="tbtn" id="snd" aria-pressed="true"><span>소리 켜짐</span><small id="sndNow" data-i="sndS">배경음과 효과음</small></button>
+      <button type="button" class="tbtn" id="emoBtn" aria-pressed="true"><span data-i="emo">감정 연출</span><small data-i="emoS">표정에 따라 장면의 빛과 효과가 바뀝니다</small></button>
       <div class="field"><span data-i="speed">글자 속도</span>
         <div class="seg" id="speedSeg">
           <button type="button" class="pillbtn" data-s="40" data-i="slow">느리게</button>
@@ -498,10 +542,10 @@ const PLAN = [["A", "엔진 기능", "done", "자동 저장과 이어하기, 지
 // 장면: img 그림, fx 입자 효과(rain snow petal leaf motes firefly star confetti none), p 생성 프롬프트
 const BG = {
   k1_night:{"name": "밤 열한 시의 부엌", "img": "images/bg_k1_night.jpg", "fx": "rain", "p": "A small cluttered Korean apartment kitchen at 11 p.m. on a rainy night. A tired single father in his mid 30s with glasses and short black hair (the man in the character sheet) sits ALONE at a small wooden dining table, rubbing his forehead in front of a laptop whose screen is full of red error messages. Dirty dishes piled in the sink, an overflowing laundry basket on a chair, an old fridge covered with a little child's cute stickers, one pendant lamp, heavy rain streaking down the dark window with blurred city lights. No child in the scene. Quiet, lonely, worn out, but warm-toned."},
-  k1_question:{"name": "밤 열한 시의 질문", "img": "images/bg_k1_question.jpg", "fx": "rain", "p": "A small apartment kitchen at 11 p.m., a single father in his mid 30s with glasses sitting at the dining table in front of a laptop full of red error messages, dirty dishes in the sink and a piled laundry basket, his 7-year-old daughter in pajamas clutching a toy rabbit by the ear standing by the table and looking up at him with a serious question, dim warm light, rain on the dark window."},
+  k1_question:{"name": "밤 열한 시의 질문", "img": "images/bg_k1_question.jpg", "fx": "rain", "p": "A small apartment kitchen at 11 p.m., a single father in his mid 30s with glasses sitting at the dining table in front of a laptop full of red error messages, dirty dishes in the sink and a piled laundry basket, his 7-year-old daughter in pajamas clutching a toy rabbit by the ear standing by the table and looking up at him with a serious question, dim warm light, rain on the dark window.", "v": ["sad"]},
   kitchen:{"name": "비 오는 저녁의 부엌", "img": "images/bg_kitchen.jpg", "fx": "rain", "p": "a small Korean apartment kitchen at 4 a.m., a single father in his 30s clumsily rolling kimbap under one warm ceiling light, torn kimbap rolls on the cutting board, an open laptop with code glowing on the dining table, rain on the dark window, his 7-year-old daughter peeking sleepily from the doorway, tender and lonely atmosphere"},
   k1_lunch:{"name": "빈 도시락통", "img": "images/bg_k1_lunch.jpg", "fx": "motes", "p": "A small apartment entrance in the evening, a 7-year-old girl in a yellow raincoat with a school backpack running in and shaking an empty lunch box high above her head, her father in his 30s with glasses kneeling with open arms and laughing, warm light."},
-  yard:{"name": "부모님 댁 마루", "img": "images/bg_yard.jpg", "fx": "motes", "p": "an old Korean family house with a wooden porch on a sunny weekend afternoon, elderly parents sitting beside their exhausted adult son, a little girl lying on the floor drawing a big hand with a wrist brace holding a small hand with crayons, persimmon tree in the yard, nostalgic golden light"},
+  yard:{"name": "부모님 댁 마루", "img": "images/bg_yard.jpg", "fx": "motes", "p": "an old Korean family house with a wooden porch on a sunny weekend afternoon, elderly parents sitting beside their exhausted adult son, a little girl lying on the floor drawing a big hand with a wrist brace holding a small hand with crayons, persimmon tree in the yard, nostalgic golden light", "v": ["sad"]},
   hairpin:{"name": "문방구 앞, 노란 머리핀", "img": "images/bg_hairpin.jpg", "fx": "motes", "p": "In front of a small Korean neighborhood stationery shop on an evening street, a father in his 30s with glasses crouching to clip a small yellow hairpin crookedly on his 7-year-old daughter's bangs, the girl holding very still with shining eyes, a shop window full of colorful stationery, warm streetlight."},
   parents_move:{"name": "네 식구의 저녁", "img": "images/bg_parents_move.jpg", "fx": "none", "p": "Moving day: the grandparents move into the small apartment with two earthenware jars; grandma fills the cupboard, grandpa pins a timetable on the fridge, the 7-year-old jumps with joy and the father carries a box."},
   entrance:{"name": "입학식 날", "img": "images/bg_entrance.jpg", "fx": "petal", "p": "An elementary school entrance ceremony in March in Korea, a 7-year-old girl with an oversized school backpack holding onto her father's black wrist brace instead of his hand while posing for a photo at the school gate, other children posing with their mothers, the father in a suit jacket with glasses smiling awkwardly."},
@@ -513,21 +557,21 @@ const BG = {
   birthday:{"name": "풍선 오십 개의 생일", "img": "images/bg_birthday.jpg", "fx": "confetti", "p": "a living room decorated for a 9th birthday party with fifty balloons, a father in a party hat reading a treasure hunt clue to excited children"},
   flu:{"name": "진눈깨비 내리던 독감의 밤", "img": "images/bg_flu.jpg", "fx": "sleet", "p": "A small apartment living room on a winter night, cold rain and sleet streaking down a frosted window, a 9-year-old girl with a bob haircut asleep under a thick blanket on the sofa with a wet towel on her forehead, her father with glasses sitting on the floor beside her, typing on a laptop with one hand and holding her small hand with the other, a thermometer and medicine on the table, lamp light."},
   cooking:{"name": "봄의 조리실", "img": "images/bg_cooking.jpg", "fx": "none", "p": "an elementary school cooking classroom in spring, mothers and children at every table, a 10-year-old girl standing alone with a band-aid on her finger, her father frozen in the doorway"},
-  notice:{"name": "구겨진 가정통신문", "img": "images/bg_notice.jpg", "fx": "none", "p": "a living room at night, a father kneeling to eye level holding a crumpled school notice, his crying 10-year-old daughter in front of him"},
+  notice:{"name": "구겨진 가정통신문", "img": "images/bg_notice.jpg", "fx": "none", "p": "a living room at night, a father kneeling to eye level holding a crumpled school notice, his crying 10-year-old daughter in front of him", "v": ["cry"]},
   songpyeon_prep:{"name": "어머니의 송편 수업", "img": "images/bg_songpyeon_prep.jpg", "fx": "motes", "p": "The kitchen of an old Korean family house in early autumn, an elderly mother in a floral blouse teaching her son in his late 30s with glasses how to knead rice cake dough, flour all over his black wrist brace, the old mother holding up a faded floral apron, the old father watching from the doorway with a small smile, warm light."},
   songpyeon:{"name": "가을의 송편 수업", "img": "images/bg_songpyeon.jpg", "fx": "motes", "p": "an elementary school cooking classroom in autumn, a father in a faded floral apron, the only man among mothers, holding up a lopsided songpyeon while his daughter laughs"},
   friend_visit:{"name": "친구가 온 날", "img": "images/bg_friend_visit.jpg", "fx": "leaf", "p": "An autumn afternoon in the same small Korean apartment. In the kitchen a father in his late 30s with glasses (the man in the sheet) wearing an apron freezes mid-motion while flipping a Korean rolled omelette in a square pan with chopsticks, listening, his ears turning red. In the background at the front entrance, his 11-year-old daughter with a bob haircut and a small yellow hairpin (the girl in the sheet) stands proudly with her hands on her hips, explaining something to a curious classmate girl of the same age with two pigtails and an art academy bag, who is taking off her shoes and looking around the apartment. Warm afternoon sunlight, a few autumn leaves visible outside the window."},
   dishes:{"name": "고무장갑 낀 포옹", "img": "images/bg_dishes.jpg", "fx": "none", "p": "A small apartment kitchen in the evening, a father in his late 30s with glasses wearing pink rubber gloves at the sink hugging his 11-year-old daughter with a bob haircut and a yellow hairpin with his wet gloved hands, water dripping, the girl complaining but not pulling away, dishes in the rack."},
   bike:{"name": "할아버지의 자전거", "img": "images/bg_bike.jpg", "fx": "firefly", "p": "a country road beside rice fields on a summer evening, a 12-year-old girl wobbling on an old bicycle, her grandfather who has just let go of the seat standing with his hands still open, her father running behind out of breath, golden light, dragonflies"},
   rain_eaves:{"name": "민박집 처마 밑", "img": "images/bg_rain_eaves.jpg", "fx": "rain", "p": "First day of a summer trip, heavy rain. Under the eaves of an old seaside guesthouse with a tiled roof, a father in his late 30s with glasses in a short-sleeve shirt (the man in the sheet) holds a soggy, wet printed schedule table and looks apologetic, while his 12-year-old daughter with a bob haircut and yellow hairpin (the girl in the sheet) sits on the wooden step beside him, happily sketching the grey stormy sea in a sketchbook with colored pencils. Grey and navy sea, rain falling in sheets, puddles, water dripping in a line from the eaves, cool blue-grey light with a warm lamp glowing behind them."},
-  beach:{"name": "동해, 해 질 녘", "img": "images/bg_beach.jpg", "fx": "motes", "p": "a quiet beach at sunset, a father with rolled-up trousers standing barefoot in the shallow waves, his 12-year-old daughter drawing a huge hand in the wet sand with a stick, orange and pink sky, peaceful and a little wistful"},
+  beach:{"name": "동해, 해 질 녘", "img": "images/bg_beach.jpg", "fx": "motes", "p": "a quiet beach at sunset, a father with rolled-up trousers standing barefoot in the shallow waves, his 12-year-old daughter drawing a huge hand in the wet sand with a stick, orange and pink sky, peaceful and a little wistful", "v": ["sad"]},
   photos:{"name": "장롱 위의 사진첩", "img": "images/bg_photos.jpg", "fx": "motes", "p": "a living room during autumn cleaning, a 12-year-old girl looking through an old family photo album, her father frozen with a rag, dust in a sunbeam"},
   graduation:{"name": "초등학교 졸업식", "img": "images/bg_graduation.jpg", "fx": "snow", "p": "an elementary school graduation in February, a 12-year-old girl with a diploma, her father awkwardly holding two bouquets"},
   grad_party:{"name": "이인분 상", "img": "images/bg_grad_party.jpg", "fx": "motes", "p": "A family celebration for an elementary school graduation in February, inside the grandparents' old Korean house: a low wooden table on the warm maru floor filled with japchae glass noodles, a box of fried chicken and a plate of slightly burst homemade kimbap rolls, a small graduation bouquet. A 12-year-old girl with a bob haircut and yellow hairpin (the girl's sheet) stands and solemnly presents a hand-drawn certificate on white drawing paper with a crayon border and a yellow colored-pencil seal to her father; the father in his late 30s with glasses (the man's sheet) receives it with both hands, deeply moved, his ears red. The elderly grandmother and grandfather (their sheets) sit at the table laughing and clapping. Soft winter sunlight through traditional paper doors."},
   parents_leave:{"name": "용달차", "img": "images/bg_parents_leave.jpg", "fx": "none", "p": "A late-February morning: a small truck with two jars, grandma hugging the crying 12-year-old, grandpa with glistening eyes, the father standing a step back with an open palm."},
   uniform:{"name": "교복 가게", "img": "images/bg_uniform.jpg", "fx": "none", "p": "Late February in a small Korean school uniform shop with racks of navy uniforms and a tall mirror. A 12-year-old girl with a bob haircut and yellow hairpin (the girl in the sheet), just changed into a brand-new navy middle school uniform blazer and skirt slightly too big for her, turns her face away and raises one hand to block the camera, embarrassed. Her father in his late 30s with glasses (the man in the sheet) holds up his smartphone to take a photo, frozen mid-gesture, his smile fading into surprise and a hint of loneliness. A shop owner with a measuring tape in the background. Soft winter daylight."},
   door:{"name": "닫힌 문 앞", "img": "images/bg_door.jpg", "fx": "none", "p": "a dim apartment hallway at night, a father in his 40s quietly placing a plate of peeled apple slices on the floor in front of a closed bedroom door, warm light leaking from under the door, tender and a little lonely"},
-  office:{"name": "스튜디오 달빛 사무실", "img": "images/bg_office.jpg", "fx": "motes", "p": "a small indie game studio office in the evening, desks with dual monitors showing code and game art, figures and energy drink cans, a kind lead programmer in a navy hoodie leaning over a junior's desk to help fix a bug while younger coworkers smile at him warmly from behind, pendant lamps, hardworking cozy atmosphere"},
+  office:{"name": "스튜디오 달빛 사무실", "img": "images/bg_office.jpg", "fx": "motes", "p": "a small indie game studio office in the evening, desks with dual monitors showing code and game art, figures and energy drink cans, a kind lead programmer in a navy hoodie leaning over a junior's desk to help fix a bug while younger coworkers smile at him warmly from behind, pendant lamps, hardworking cozy atmosphere", "v": ["down"]},
   store:{"name": "자정의 편의점", "img": "images/bg_store.jpg", "fx": "none", "p": "A Korean convenience store at midnight, a man in his early 40s with glasses in a navy hoodie standing very seriously in front of a shelf of feminine care products holding a basket full of different packages, a kind middle-aged female cashier smiling and placing a hand warmer pack on the counter, fluorescent light, gentle humor."},
   aunt_shop:{"name": "작은엄마와 백화점", "img": "images/bg_aunt_shop.jpg", "fx": "none", "p": "A department store: the father waits on a bench staring at the ceiling while the aunt and the 13-year-old girl laugh together at a pastel girls’ shop."},
   school_office:{"name": "교무실", "img": "images/bg_school_office.jpg", "fx": "motes", "p": "A Korean middle school teachers' office in spring, a 14-year-old girl in a navy school uniform with a bob haircut, a yellow hairpin and a small cut on her lip turning her face away, her father in his 40s with glasses, a navy hoodie and a company ID lanyard standing beside her out of breath, a female homeroom teacher at a desk, a boy with tissue on his nose and his mother in the background, tense."},
@@ -543,13 +587,13 @@ const BG = {
   mom_call:{"name": "십 년 만의 전화", "img": "images/bg_mom_call.jpg", "fx": "none", "p": "A summer night in the same small Korean apartment kitchen. A man in his early 40s with glasses (the man in the sheet) sits at the table with his smartphone lying face-down in front of him, hands clasped, carefully telling his daughter something. Across from him his 17-year-old daughter with a bob haircut and a yellow hairpin (the girl in the sheet) in a white short-sleeve school uniform shirt has stopped sharpening a pencil with a box cutter, pencil shavings and charcoal sticks on spread newspaper, charcoal-blackened fingertips, looking down quietly with a complicated expression. An electric fan, an open window onto a summer night, warm lamp light, tense but tender."},
   ex_window:{"name": "카페 건너편 길", "img": "images/bg_ex_window.jpg", "fx": "motes", "p": "A summer street in Seoul in front of a cafe, a father in his 40s with glasses waiting alone across the street under a tree, seen from behind, and through the cafe window his 17-year-old daughter in a school uniform sitting across from an elegant woman in her 40s with long hair in a beige blouse, heat haze, lonely."},
   chilsun_sea:{"name": "칠순의 바다", "img": "images/bg_chilsun_sea.jpg", "fx": "none", "p": "Grandpa’s 70th-birthday trip to the East Sea: the aunt and the 17-year-old girl talk on a breakwater with a sleeping toddler; the father pretends not to listen on a bench."},
-  backs100:{"name": "백 장의 등", "img": "images/bg_backs100.jpg", "fx": "none", "p": "Late at night in the same art academy studio, all lights off except one desk lamp. A 17-year-old girl with a bob haircut and yellow hairpin (the girl in the sheet) sits on the floor beside an easel, crying silently, wiping tears with charcoal-blackened hands. On her lap lies an open sketchbook full of charcoal drawings of the same man's back: asleep at a kitchen table, hunched at a monitor. Her father in his early 40s with glasses and black wrist braces (the man in the sheet) kneels beside her, gently holding out his smartphone whose screen is full of thumbnails of a child's crayon drawings. Tender and emotional, warm lamp light against a dark room."},
+  backs100:{"name": "백 장의 등", "img": "images/bg_backs100.jpg", "fx": "none", "p": "Late at night in the same art academy studio, all lights off except one desk lamp. A 17-year-old girl with a bob haircut and yellow hairpin (the girl in the sheet) sits on the floor beside an easel, crying silently, wiping tears with charcoal-blackened hands. On her lap lies an open sketchbook full of charcoal drawings of the same man's back: asleep at a kitchen table, hunched at a monitor. Her father in his early 40s with glasses and black wrist braces (the man in the sheet) kneels beside her, gently holding out his smartphone whose screen is full of thumbnails of a child's crayon drawings. Tender and emotional, warm lamp light against a dark room.", "v": ["laugh"]},
   kitchen_teen:{"name": "히라가나 냉장고", "img": "images/bg_kitchen_teen.jpg", "fx": "none", "p": "a kitchen at night with hiragana flash cards on the fridge, a father reading interview questions to his 18-year-old daughter"},
   portfolio:{"name": "스무 장 고르기", "img": "images/bg_portfolio.jpg", "fx": "none", "p": "An evening in December in the same art academy studio. About a hundred drawings are spread across the whole floor: a man running last in a race, a plate of fruit left at a closed door, a man asleep at a table, a bicycle on a country road, a big hand. An 18-year-old girl with a bob haircut and yellow hairpin (the girl in the sheet) kneels in the middle, overwhelmed and undecided, holding two drawings. Her father in his mid 40s with glasses (the man in the sheet) crouches beside her, showing her his phone screen full of image thumbnails and pointing at the drawings of people. Warm studio light, thoughtful mood."},
   peephole:{"name": "문구멍 너머", "img": "images/bg_peephole.jpg", "fx": "none", "p": "View through a door peephole with a strong fisheye lens effect, an apartment corridor at night, an 18-year-old girl with a bob haircut and a yellow hairpin in a winter coat receiving a gift-wrapped box from a shy teenage boy in a school uniform who is bowing, a red-faced moment."},
   scarf:{"name": "꺼진 텔레비전", "img": "images/bg_scarf.jpg", "fx": "none", "p": "A winter night in the same Korean apartment living room. An 18-year-old girl with a bob haircut and yellow hairpin (the girl in the sheet), wearing her navy school blazer under an open padded winter coat, sits on the sofa with flushed red cheeks, looking down at a gift-wrapped scarf box with a ribbon on her lap. Beside her, her father in his mid 40s with glasses (the man in the sheet) pretends to seriously watch a TV that is obviously switched off with a black screen, sneaking a sideways glance at her, his ears bright red. Warm lamp light, cold blue window, comedic and tender."},
   kimjang:{"name": "마지막 김장", "img": "images/bg_kimjang.jpg", "fx": "snow", "p": "kimjang day in a winter yard, a grandmother teaching her 18-year-old granddaughter, who sketches her hands while the grandfather poses"},
-  desk:{"name": "새벽 두 시, 서윤의 방", "img": "images/bg_desk.jpg", "fx": "motes", "p": "a 20-year-old girl's bedroom at 2 a.m., desk lamp glowing over sketchbooks and a drawing tablet, an acceptance letter from an art university in Kyoto on the desk, her father standing at the door holding two mugs, quiet emotional night"},
+  desk:{"name": "새벽 두 시, 서윤의 방", "img": "images/bg_desk.jpg", "fx": "motes", "p": "a 20-year-old girl's bedroom at 2 a.m., desk lamp glowing over sketchbooks and a drawing tablet, an acceptance letter from an art university in Kyoto on the desk, her father standing at the door holding two mugs, quiet emotional night", "v": ["shock"]},
   homecome:{"name": "면접에서 돌아온 날", "img": "images/bg_homecome.jpg", "fx": "snow", "p": "An apartment entrance in January, an 18-year-old girl with a bob haircut and a yellow hairpin just back from a trip with a small suitcase and a winter coat, still wearing her shoes and talking excitedly with her hands, her father in a navy hoodie standing in the hallway listening with a mug in his hand."},
   kitchen_lesson:{"name": "김밥 수업", "img": "images/bg_kitchen_lesson.jpg", "fx": "motes", "p": "a Sunday kitchen, a father teaching his 20-year-old daughter to roll kimbap, the daughter laughing at a burst roll"},
   yard_bye:{"name": "출국 일주일 전", "img": "images/bg_yard_bye.jpg", "fx": "motes", "p": "an old family house porch in late winter, a 20-year-old woman drawing four hands while her grandparents pack and oil a suitcase"},
@@ -561,7 +605,7 @@ const BG = {
   cafe:{"name": "소개팅 카페", "img": "images/bg_cafe.jpg", "fx": "none", "p": "a quiet cafe on a gray rainy afternoon, a middle-aged man sitting alone at a table for two with two coffee cups, the opposite chair empty, his reflection faint in the window, muted colors, lonely mood"},
   busstop:{"name": "비 오는 정류장", "img": "images/bg_busstop.jpg", "fx": "rain", "p": "a bus stop in heavy evening rain, a woman with round glasses crouching to pick up books spilled from a torn box, a man holding his umbrella over her and the books while he gets soaked, city lights in puddles, a fateful first meeting"},
   book:{"name": "골목 책방 쉼표", "img": "images/bg_book.jpg", "fx": "motes", "p": "a tiny independent bookstore in an alley, wooden shelves, warm afternoon sunlight through the window, a woman with round glasses and a mustard cardigan handing a cup of barley tea to a shy regular customer in a navy hoodie holding a wrapped parcel of books, gentle budding romance"},
-  hospital:{"name": "응급실 복도", "img": "images/bg_hospital.jpg", "fx": "none", "p": "a hospital emergency room corridor late at night, a man and a woman sitting side by side on a bench holding paper cups from a vending machine, quiet tired comfort"},
+  hospital:{"name": "응급실 복도", "img": "images/bg_hospital.jpg", "fx": "none", "p": "a hospital emergency room corridor late at night, a man and a woman sitting side by side on a bench holding paper cups from a vending machine, quiet tired comfort", "v": ["worry"]},
   call:{"name": "영상통화, 서울과 교토", "img": "images/bg_call.jpg", "fx": "star", "p": "a man sitting in a dark living room at night lit by a phone screen, on the screen his grown daughter in her small Kyoto student room grinning and holding up her illustrated book, he is crying and laughing at once, warm glow against deep blue night"},
   book_window:{"name": "유리창 너머의 두 사람", "img": "images/bg_book_window.jpg", "fx": "leaf", "p": "Evening in a narrow alley, seen from outside the glass window of a tiny bookstore, inside the warm shop a man in an expensive tailored suit is holding the hands of a woman with round glasses and a mustard cardigan who looks down, in the foreground the faint reflection of a man in a navy hoodie standing outside in the alley, autumn leaves on the ground, misunderstanding."},
   book_notice:{"name": "영업 종료 안내문", "img": "images/bg_book_notice.jpg", "fx": "leaf", "p": "Night, the outside of a tiny bookstore in an alley with a hand-written paper notice taped to the glass door, inside a woman with round glasses alone sticking price stickers on books with small sad shoulders, a man in a navy hoodie standing in the dark alley looking at the notice, fallen autumn leaves."},
@@ -574,7 +618,7 @@ const BG = {
   trio_call:{"name": "삼자 통화 면접", "img": "images/bg_trio_call.jpg", "fx": "motes", "p": "Inside a tiny bookstore at night, a man with glasses and a woman with round glasses and a mustard cardigan standing side by side at the counter looking nervously at a smartphone on a stand, on the screen a young woman with a bob haircut and a yellow hairpin with crossed arms like a strict interviewer, warm lamp light, funny."},
   book_angry:{"name": "아무거나", "img": "images/bg_book_angry.jpg", "fx": "none", "p": "Thursday evening in the same small independent bookstore. A woman in her early 40s with round glasses, wavy brown hair and a mustard cardigan (the woman in the sheet) has put a roll of packing tape down hard on the counter beside half-wrapped book parcels; she frowns with her hands on her hips, honestly annoyed but not cruel. Across the counter a man in his late 40s with glasses (the man in the sheet) stands startled and flustered, holding a parcel, eyes wide. Warm bookstore light, tense but slightly comedic."},
   pojang:{"name": "첫눈 오는 포장마차", "img": "images/bg_pojang.jpg", "fx": "snow", "p": "A Korean street food tent on a December night during the first snow, steam rising from a pot of fish cake skewers, a man in his late 40s with glasses happily eating fish cake while a woman with round glasses and a mustard scarf watches him smiling with a paper cup of broth, snow falling, warm orange light."},
-  kansai:{"name": "간사이 공항", "img": "images/bg_kansai.jpg", "fx": "motes", "p": "Kansai airport arrivals, a 22-year-old woman holding an old crayon sign running to her father"},
+  kansai:{"name": "간사이 공항", "img": "images/bg_kansai.jpg", "fx": "motes", "p": "Kansai airport arrivals, a 22-year-old woman holding an old crayon sign running to her father", "v": ["cry"]},
   dorm_wall:{"name": "그림으로 가득한 벽", "img": "images/bg_dorm_wall.jpg", "fx": "motes", "p": "Kyoto in spring, a small six-tatami student dormitory room. One entire wall is covered with pinned drawings: sketches of a big hand wearing a black wrist brace, a man's back, a man's ear, and a drawing of a man tilting his umbrella at a rainy bus stop. A man in his late 40s with glasses carrying a travel bag (the man in the sheet) stands looking at the wall, stunned and moved, while his 22-year-old daughter with a bob haircut, a faded yellow hairpin and an art supplies bag on her shoulder (the girl in the sheet) shows him the wall with a shy proud smile. A bamboo kimbap rolling mat and seaweed sheets on the small desk, soft afternoon light through a paper window. Only these two people."},
   signing:{"name": "교토 서점 사인회", "img": "images/bg_signing.jpg", "fx": "motes", "p": "a book signing event inside a cozy Kyoto bookstore, a young illustrator signing copies of her illustrated essay, a line of readers, her father and a woman with round glasses standing at the back looking stunned at each other"},
   kamogawa:{"name": "가모가와 강변", "img": "images/bg_kamogawa.jpg", "fx": "petal", "p": "the Kamo riverbank in Kyoto at dusk in spring, cherry blossoms and paper lanterns, a man and a woman sitting side by side on the stone bank, their hands almost touching, pink and blue twilight"},
@@ -582,7 +626,7 @@ const BG = {
   dorm:{"name": "다다미 여섯 장", "img": "images/bg_dorm.jpg", "fx": "motes", "p": "a six-tatami dorm room in Kyoto with a wall of hand drawings, three people laughing over burst kimbap"},
   dorm_two:{"name": "둘만의 아침", "img": "images/bg_dorm_two.jpg", "fx": "motes", "p": "Morning in the same small Kyoto student dormitory room with tatami mats. Only two people: a 22-year-old girl with a bob haircut and yellow hairpin (the girl in the sheet) sits at the low table with her arms crossed like a gentle detective, looking at her father with worried kindness; her father in his late 40s with glasses (the man in the sheet) sits across from her looking down, sheepish and a little sad. Between them a bamboo kimbap mat and two rolls of slightly burst kimbap. Soft morning light through a paper window. Bittersweet and warm."},
   campus:{"name": "교수의 연구실", "img": "images/bg_campus.jpg", "fx": "motes", "p": "An art university studio in Kyoto in spring, large windows, easels and drawings, an elderly gray-haired Japanese professor with kind eyes bowing to a man in his late 40s with glasses who bows back even deeper and awkwardly, a 22-year-old woman with a bob haircut and a yellow hairpin standing beside them looking up at the ceiling to hold back tears."},
-  kamo_night:{"name": "가모가와의 밤", "img": "images/bg_kamo_night.jpg", "fx": "petal", "p": "the Kamo riverbank at night, a father and his 22-year-old daughter sitting close, her head on his shoulder"},
+  kamo_night:{"name": "가모가와의 밤", "img": "images/bg_kamo_night.jpg", "fx": "petal", "p": "the Kamo riverbank at night, a father and his 22-year-old daughter sitting close, her head on his shoulder", "v": ["cry"]},
   dorm_kitchen:{"name": "공용 주방의 칼질 소리", "img": "images/bg_dorm_kitchen.jpg", "fx": "none", "p": "A small shared kitchen in a Japanese student dormitory at night, a man in his late 40s with glasses holding a knife over chopped yellow pickled radish, frozen and listening, a door ajar behind him spilling warm light with two women's silhouettes talking inside, quiet and emotional."},
   chuseok:{"name": "추석, 꽃무늬 앞치마", "img": "images/bg_chuseok.jpg", "fx": "leaf", "p": "Chuseok at an old Korean family house in autumn, in the kitchen an elderly mother tying a faded floral apron around a woman with round glasses, both laughing, barley roasting on the stove, through the open door an elderly father and a man with glasses sitting on the wooden porch, persimmons on the tree."},
   hill:{"name": "뒷산 노을", "img": "images/bg_hill.jpg", "fx": "leaf", "p": "a hilltop overlooking a small Korean town at autumn sunset, a middle-aged man nervously proposing to a woman in a mustard cardigan, silver grass swaying, orange and gold sky, quiet heartfelt romance"},
@@ -607,9 +651,11 @@ const S = [
   ["","돌아보니 서윤이가 잠옷 차림으로 문간에 서 있었다. 토끼 인형의 귀를 꼭 쥐고서."],
   ["정우","왜 안 자. 무서운 꿈 꿨어?","","wor"],
   ["서윤","아니. 물어볼 게 있어서.","","ser"],
+  {"v":"sad"},
   ["서윤","아빠, 엄마는 이제 안 와?","","sad"],
   ["정우","(올 것이 왔다. 석 달 동안 미뤄 온 질문.)","","ser"],
   {"c":[{"t":"“응. 엄마는 이제 다른 집에서 살아. 그래도 서윤이 엄마인 건 변함없어.”","d":1,"r":[["서윤","…그럼 아빠는? 아빠도 어디 가?","","wor"],["정우","아빠는 안 가. 어디에도.","","ser"],["","서윤이는 한참 나를 보다가, 고개를 한 번 끄덕였다."],["서윤","그럼 됐어.","","s"]],"f":[["h","+",1]]},{"t":"“…엄마는 좀 멀리 일하러 갔어.”","d":0,"r":[["서윤","거짓말. 할머니가 전화로 말하는 거 다 들었어.","","pout"],["서윤","아빠는 안 가지?","","wor"],["정우","…안 가. 미안하다, 아빠가 거짓말했어.","","sad"],["서윤","다음부터는 하지 마. 나 일곱 살이야.","","pout"]]}],"q":"엄마는 이제 안 오냐는 질문. 뭐라고 답할까."},
+  {"v":""},
   ["","서윤이는 식탁 의자에 기어 올라와 내 노트북 화면을 들여다봤다."],
   ["서윤","빨간 글씨가 많네. 아빠 혼났어?","","n"],
   ["정우","응. 컴퓨터한테 혼나는 중이야.","","s"],
@@ -647,11 +693,13 @@ const S = [
   ["정우","손이 왜 이렇게 커?","","s"],
   ["서윤","아빠 손은 원래 커. 내 손이 다 들어가잖아.","","s"],
   ["","서윤이는 제 손을 내 손바닥 위에 올려 보였다. 정말로 다 들어갔다."],
+  {"v":"sad"},
   ["어머니","얘가 요즘 그림만 그린다. 말은 안 하고.","","wor"],
   ["정우","말을 안 해요?","","wor"],
   ["어머니","유치원에서도 그렇단다. 엄마 얘기가 나오면 입을 닫고 크레파스를 쥔대.","","sad"],
   ["","가슴 한쪽이 내려앉았다. 아이는 울지 않는 대신 그리고 있었다."],
   {"c":[{"t":"(서윤이 옆에 엎드려 같이 그린다)","d":1,"r":[["","나는 크레파스를 하나 집어 손 그림 옆에 삐뚤빼뚤한 토끼를 그렸다."],["서윤","아빠, 이거 돼지야?","","smk"],["정우","토끼야.","","emb"],["서윤","아빠는 그림 그리지 마. 내가 그릴게. 아빠는 옆에 있어.","","s"],["","옆에 있으라는 말. 그게 아이가 원하는 전부였다."]]},{"t":"“서윤아, 슬프면 슬프다고 말해도 돼.”","d":0,"r":[["서윤","안 슬퍼.","","pout"],["","크레파스를 쥔 손에 힘이 들어가 종이가 조금 찢어졌다."],["서윤","…조금만 슬퍼. 그림 그리면 괜찮아져.","","sad"],["정우","그럼 많이 그려. 아빠가 종이는 얼마든지 사 줄게.","","s"]],"f":[["h","+",1]]}],"q":"아이는 울지 않는 대신 그리고 있다."},
+  {"v":""},
   ["","저녁상을 물리고, 아버지가 읽던 신문을 반으로 접었다. 아버지가 신문을 접는 건 할 말이 있다는 뜻이었다."],
   ["아버지","정우야. 우리가 올라가마.","","ser"],
   ["정우","네?","","sur"],
@@ -899,6 +947,7 @@ const S = [
   ["정우","서윤아. 이거 왜 아빠한테 안 보여 줬어.","","ser"],
   ["서윤","…","","pout"],
   ["정우","아빠가 알았으면 휴가 내고 갔지. 그럼 혼자 칼질하다 다치지도 않았잖아.","","wor"],
+  {"v":"cry"},
   ["서윤","아빠가 오면 더 이상하잖아!","","ang"],
   ["","서윤이가 소리를 질렀다. 처음이었다. 이렇게 큰 소리는."],
   ["서윤","다들 엄마랑 오는 건데. 거기 아빠가 오면, 다들 나 엄마 없는 거 알잖아. 그래서 바쁘다고 한 건데…","","cry"],
@@ -908,6 +957,7 @@ const S = [
   ["","아무 말도 할 수 없었다. 사 년 동안 김밥을 싸고, 머리를 땋고, 풍선을 불었다. 다 해 줄 수 있다고 생각했다."],
   ["","그런데 내가 아무리 해도, 종이 위의 ‘어머님’이라는 글자는 지워지지 않았다. 아이는 그 글자 앞에서 날마다 혼자 거짓말을 하고 있었다."],
   {"c":[{"t":"(무릎을 꿇고 눈높이를 맞춘다) “미안해. 아빠는 엄마가 될 수 없어.”","d":1,"r":[["서윤","…알아.","","cry"],["정우","근데 서윤아. 엄마가 바쁘다고 거짓말 안 해도 돼. 엄마가 없는 건 네가 잘못한 게 아니니까. 숨길 일도 아니야.","","ser"],["","서윤이는 내 어깨에 얼굴을 묻고 한참 울었다. 나는 그 작은 등을 두드리며, 나도 울었다."]],"f":[["h","+",1]]},{"t":"“엄마 몫까지 아빠가 다 할게. 걱정하지 마.”","d":0,"r":[["서윤","아빠는 못 해. 아빠는 아빠잖아.","","cry"],["","맞는 말이었다. 다 하겠다는 약속이 오히려 아이를 더 혼자 두는 말일 수도 있었다."],["정우","…그래. 아빠는 엄마가 될 수 없어. 그래도 서윤아, 엄마가 바쁘다고 거짓말 안 해도 돼. 그건 네 잘못이 아니니까.","","sad"],["","서윤이는 내 어깨에 얼굴을 묻고 한참 울었다. 나는 그 작은 등을 두드리며, 나도 울었다."]]}],"q":"‘어머님’이라는 글자 앞에서."},
+  {"v":""},
   ["서윤","아빠. 그럼 다음에 또 그런 거 있으면… 그냥 아빠가 와. 이상해도.","","tsm"],
   ["정우","응. 이상하게 하고 갈게. 제일 이상하게.","","smk"],
   ["서윤","…그건 하지 마.","","pout"],
@@ -1057,10 +1107,12 @@ const S = [
   ["","대학 때 혼자 만들던 게 있었다. 주말마다 조금씩. 서윤이가 태어난 해에 그 폴더는 마지막으로 수정되었다."],
   ["서윤","언제 접었어?","","n"],
   ["정우","음… 네가 태어났을 때쯤.","","thk"],
+  {"v":"sad"},
   ["","말하고 나서 아차 싶었다. 서윤이의 얼굴에서 장난기가 걷혔다."],
   ["서윤","나 때문에?","","wor"],
   {"c":[{"t":"“아니. 너 덕분에 더 좋은 걸 만들게 된 거야.”","d":1,"r":[["서윤","뭘 만들었는데.","","thk"],["정우","너. 그리고 터진 김밥.","","s"],["서윤","…그건 게임이 아니잖아.","","tsm"],["정우","아빠한테는 그게 제일 어렵고 재밌는 게임이야. 세이브도 안 되고.","","s"]]},{"t":"“…시간이 없어졌으니까. 그건 사실이야.”","d":0,"r":[["","거짓말은 하지 않기로 했었다. 일곱 살 때 혼난 뒤로."],["서윤","…미안.","","sad"],["정우","미안할 일이 아니야. 아빠는 그 시간을 너한테 쓴 걸 한 번도 아까워한 적 없어. 그것도 사실이야.","","ser"]],"f":[["h","+",1]]}],"q":"“나 때문에?”"},
   ["","서윤이는 모래 위에 무릎을 끌어안고 앉았다. 파도가 손 그림의 손바닥까지 올라와 있었다."],
+  {"v":""},
   ["서윤","아빠, 그럼 이렇게 하자.","","ser"],
   ["서윤","내가 나중에 그림을 그릴게. 아빠가 그걸로 게임을 만들어. 누가 누구 옆에 있어 주는 얘기.","","ser"],
   ["정우","네가 그리고, 아빠가 만들고?","","sur"],
@@ -1138,6 +1190,7 @@ const S = [
   ["","문에는 손으로 그린 팻말이 붙었다. 노크하는 손 그림과, 그 밑에 작게 ‘꼭’."],
   ["","‘아빠’ 하고 부르던 목소리가 ‘어.’와 ‘됐어.’로 바뀌는 데는 한 학기면 충분했다."],
   {"bg":"office"},
+  {"v":"down"},
   ["","토요일 출근에도 더는 따라오지 않았다. 내 의자 옆 바닥이 휑했다."],
   ["박민호","선배, 서윤이는 요즘 안 와요? 디자인팀 누나들이 찾던데.","","s"],
   ["","그해 입사한 신입 박민호는 서윤이의 마지막 토요일을 딱 한 번 본 사람이었다."],
@@ -1334,11 +1387,13 @@ const S = [
   ["","넘기다가, 울기 시작했다. 소리 없이, 목탄 묻은 손등으로 눈을 문지르면서."],
   ["서윤","파일 이름이 왜 이렇게 촌스러워.","","tsm"],
   ["정우","프로그래머라 그래.","","s"],
+  {"v":"laugh"},
   ["서윤","커밋 메시지도 있어? …‘오늘은 토끼를 그림. 돼지 같지만 본인은 토끼라고 주장함.’ 이거 아빠가 그린 거잖아!","","l"],
   ["","서윤이는 울다가 웃었다. 그러고는 이젤 뒤에서 스케치북 한 권을 꺼냈다."],
   ["서윤","나도 숨긴 거 있어.","","emb"],
   ["","스케치북에는 전부 내 등이 있었다. 식탁에서 자는 등, 모니터 앞의 등, 복도에서 접시를 내려놓는 등."],
   ["","맨 뒷장에 번호가 적혀 있었다. 100."],
+  {"v":""},
   ["서윤","손 크로키 백 장은 숙제였고. 이건 그냥 내가 그린 거야. 아빠 등 백 장.","","cry"],
   ["서윤","대회는 떨어졌는데, 이건 누가 뭐래도 내가 제일 잘 그려. 세상에서.","","tsm"],
   ["","스탠드 불빛 아래에서 우리는 한참 서로의 십 년을 넘겨 봤다."],
@@ -1454,10 +1509,12 @@ const S = [
   {"ch":8,"t":"제8장  간사이행 7시 40분"},
   ["","이월의 어느 새벽 두 시. 서윤이 방에 아직 불이 켜져 있다. 문은 열려 있었다. 이제는 늘 열려 있다."],
   ["정우","아직 안 자? 코코아 타 왔다.","","s"],
+  {"v":"shock"},
   ["","서윤이는 모니터 앞에 굳어 있었다. 화면에는 일본어가 가득했다."],
   ["서윤","아빠, 나… 붙었어. 교토에 있는 예술대학. 캐릭터 디자인 전공.","","l"],
   ["","머그잔을 떨어뜨릴 뻔했다. 코코아가 손등에 튀었다."],
   ["정우","붙었어? 진짜? 다시 읽어 봐. 일본어 잘못 읽은 거 아니야?","","sur"],
+  {"v":""},
   ["서윤","세 번 읽었어. ‘합격’은 한자라 틀릴 수가 없어.","","l"],
   ["","나는 서윤이를 번쩍 안아 올리려다가 허리에서 소리가 나 그만뒀다. 대신 머리를 마구 헝클어뜨렸다."],
   ["서윤","아, 머리! …근데 아빠.","","pan"],
@@ -1694,7 +1751,9 @@ const S = [
   ["","말하고 나니 정말로 손이 떨리고 있었다. 지수 씨는 말없이 일어나 자판기로 갔다."],
   ["","돌아온 그 사람의 손에는 종이컵 두 개가 들려 있었다."],
   ["지수","율무차예요. 보리차는 없더라고요.","","s"],
+  {"v":"worry"},
   {"c":[{"t":"(받아 들고, 솔직하게 말한다) “사실 무서웠어요.”","d":1,"r":[["정우","딸을 보내고 나니 부모님만 남았는데, 그분들도 언젠가… 그 생각이 처음 들었어요.","","sad"],["지수","저는 삼 년 전에 아버지를 보냈어요. 그 복도가 딱 이랬어요.","","sad"],["지수","그때 옆에 아무도 없었거든요. 그래서 지금 여기 앉아 있는 거예요. 누가 옆에 있는 게 어떤 건지 아니까.","","s"]],"f":[["r","+",1]]},{"t":"(받아 들고, 괜찮은 척한다) “고맙습니다. 별일 아니에요.”","d":0,"r":[["지수","별일 아닌 사람은 종이컵을 그렇게 꽉 안 쥐어요.","","smk"],["","내려다보니 컵이 찌그러져 있었다. 나는 머쓱하게 손에 힘을 풀었다."],["지수","저는 삼 년 전에 아버지를 보냈어요. 그 복도가 딱 이랬어요. 그러니까 제 앞에서는 괜찮은 척 안 하셔도 돼요.","","s"]]}],"q":"율무차의 온기가 손에 닿는다."},
+  {"v":""},
   ["","우리는 한동안 말없이 율무차를 마셨다. 자판기 불빛이 복도 바닥에 네모나게 떨어져 있었다."],
   ["정우","우연이 세 번이네요.","","s"],
   ["지수","세 번이면 뭐라고 하는지 아세요?","","smk"],
@@ -2093,6 +2152,7 @@ const S = [
   ["서윤","아빠!","","l"],
   ["","서윤이가 달려왔다. 이 년 사이 머리가 조금 길었고, 앞머리에는 색이 바랜 노란 머리핀이 그대로였다."],
   ["","나는 가방을 떨어뜨리고 두 팔을 벌렸다. 서윤이가 부딪치듯 안겼다."],
+  {"v":"cry"},
   ["서윤","아빠 살 빠졌어. 밥 먹었어?","","tsm"],
   ["정우","기내식 두 번 먹었어. 너는?","","tsm"],
   ["서윤","아빠 온다고 아침부터 못 먹었어.","","tsm"],
@@ -2259,6 +2319,7 @@ const S = [
   ["","서윤이는 편의점 어묵을 사 왔다. 지수 씨의 보고를 받았다고 했다."],
   ["서윤","아빠, 나 책에 안 쓴 얘기 있어.","","ser"],
   ["정우","응.","","n"],
+  {"v":"cry"},
   ["서윤","일 학년 때 나 그만두려고 했어. 여름에.","","sad"],
   ["","어묵을 든 손이 멈췄다. 그해 여름, 서윤이는 매주 사진을 보냈다. 강, 창문, 연필 부스러기. 웃는 이모티콘과 함께."],
   ["서윤","말이 안 통했어. 수업은 반도 못 알아듣고, 애들은 다 나보다 잘 그리고. 기숙사에서 밥 먹다가 운 날이 더 많았어.","","sad"],
@@ -2267,12 +2328,14 @@ const S = [
   ["서윤","아빠가 외주 뛰어서 보낸 학비잖아. 할아버지 통장이잖아. 그걸 석 달 만에 그만둔다고 어떻게 말해.","","sad"],
   ["서윤","그래서 일요일마다 제일 괜찮아 보이는 사진을 골라서 보냈어. ‘아빠 밥 먹었어?’ 하고.","","sad"],
   ["","나는 강물을 봤다. 그 일요일들에, 나는 냄비에 라면을 끓여 사진을 찍어 보냈다. 제일 괜찮아 보이게."],
+  {"v":""},
   {"c":[{"t":"“…아빠도 거짓말했어. 밥 안 먹은 날이 더 많았다.”","d":1,"r":[["서윤","알아.","","smk"],["정우","알았어?","","sur"],["서윤","라면 사진이 맨날 같은 냄비에 같은 각도였어. 아빠, 그건 한 번 찍어 놓고 돌려 쓴 거지.","","smk"],["","들켰다. 이 년 만에. 우리는 서로에게 제일 괜찮은 사진만 보내며, 서로를 속이지 못하고 있었다."]],"f":[["h","+",1]]},{"t":"“말했으면 아빠가 당장 갔을 텐데.”","d":0,"r":[["서윤","그러니까 말 안 한 거야. 아빠는 진짜 왔을 거잖아. 회사도 버리고.","","ser"],["서윤","그리고 아빠도 거짓말했잖아. 라면 사진, 맨날 같은 냄비에 같은 각도였어. 한 번 찍어 놓고 돌려 쓴 거지.","","smk"],["","들켰다. 이 년 만에. 우리는 서로에게 제일 괜찮은 사진만 보내며, 서로를 속이지 못하고 있었다."]]}],"q":"우리 둘 다 괜찮은 사진만 보냈다."},
   ["서윤","그날 밤에, 표를 사려다가 스케치북을 폈어. 집 생각이 나서. 아빠 손을 그렸어. 그리고 김밥. 그리고 운동회.","","thk"],
   ["서윤","그리다 보니까 아침이었어. 열두 장이 돼 있더라. 그걸 그냥 인터넷에 올렸어. 일본어도 서툴게 달아서.","","s"],
   ["서윤","자고 일어났더니 댓글이 삼천 개였어. ‘우리 아빠도 이랬다.’ ‘우리 아빠는 안 이랬다, 부럽다.’ ‘이 아빠 실존 인물이냐.’","","s"],
   ["서윤","그때 알았어. 내가 여기 온 이유. 유행하는 그림 그리러 온 게 아니라, 아빠를 그리러 온 거였어.","","ser"],
   ["","서윤이는 무릎을 끌어안았다. 강 건너 등불이 물에 흔들렸다."],
+  {"v":"cry"},
   ["서윤","그러니까 아빠, 그 책은 내가 아빠한테 준 선물이 아니야. 아빠가 나를 살린 거야. 또.","","tsm"],
   ["","나는 서윤이의 어깨를 끌어당겼다. 스물두 살의 어깨는 일곱 살 때보다 넓었지만, 내 팔 안에 여전히 다 들어왔다."],
   ["정우","다음에는 말해라. 괜찮은 사진 말고, 안 괜찮은 사진도 보내.","","ser"],
@@ -2303,12 +2366,14 @@ const S = [
   ["","탑승 안내가 울렸다. 이 년 전 인천에서는 내가 남았고, 서윤이가 뒤돌아보지 않고 들어갔다."],
   ["","이번에는 내가 걸었다. 지수 씨와 나란히. 게이트 앞에서 나는 멈췄다."],
   {"c":[{"t":"(뒤돌아본다)","d":1,"r":[["","뒤돌아봤다. 돌아보면 울 걸 알았지만, 이제는 우는 게 겁나지 않았다."]]},{"t":"(서윤이처럼, 돌아보지 않고 걷는다)","d":0,"r":[["","돌아보지 않으려고 했다. 그런데 지수 씨가 내 소매를 잡아 돌려세웠다."],["지수","봐요. 따님이 기다리잖아요.","","s"]]}],"q":"게이트 앞."},
+  {"v":"cry"},
   ["","서윤이는 그 자리에 그대로 서 있었다. 십삼 년 된 팻말을 머리 위로 들고."],
   ["","‘우리 아빠 = 캐릭터 1번’. 그 밑에 새 글씨가 덧붙어 있었다. ‘+ 2번 (보리차 담당)’."],
   ["","서윤이는 울면서 웃고 있었다. 이번에는 숨기지 않았다. 안 괜찮은 얼굴 그대로."],
   ["서윤","아빠! 밥 먹어! 진짜로!","","tsm"],
   ["정우","너도! 진짜로!","","tsm"],
   ["","공항이 떠나가라 소리쳤다. 사람들이 쳐다봤다. 귀가 타는 것 같았지만 상관없었다."],
+  {"v":""},
   ["","비행기에서 우리는 터진 김밥을 나눠 먹었다. 지수 씨가 창밖의 구름을 보며 말했다."],
   ["지수","좋은 딸을 뒀어요.","","s"],
   ["정우","네. 그리고 그 애가 좋은 사람을 골라 줬습니다. 엽서로.","","s"],
@@ -2324,9 +2389,11 @@ const S = [
   ["서윤","아빠. 서울 가서 우산 두 개 챙겨. 하나는 아빠 거, 하나는… 씌워 줄 사람 거.","","smk"],
   ["","탑승 안내가 울렸다. 이 년 전 인천에서는 내가 남았고, 서윤이가 뒤돌아보지 않고 들어갔다."],
   {"c":[{"t":"(뒤돌아본다)","d":1,"r":[["","뒤돌아봤다. 돌아보면 울 걸 알았지만, 이제는 우는 게 겁나지 않았다."]]},{"t":"(서윤이처럼, 돌아보지 않고 걷는다)","d":0,"r":[["","돌아보지 않으려고 했다. 게이트 앞에서야 참지 못하고, 한 번 돌아봤다."]]}],"q":"게이트 앞."},
+  {"v":"cry"},
   ["","서윤이는 그 자리에 그대로 서 있었다. 십삼 년 된 팻말을 머리 위로 들고. ‘우리 아빠 = 캐릭터 1번’."],
   ["서윤","아빠! 밥 먹어! 진짜로!","","tsm"],
   ["정우","너도! 진짜로!","","tsm"],
+  {"v":""},
   ["","비행기에서 터진 김밥을 혼자 먹었다. 옆자리가 비어 있었다. 창밖으로 구름이 느리게 지나갔다."],
   {"lb":"k17_end"},
   {"bg":"office"},
@@ -2476,10 +2543,12 @@ const S = [
   ["정우","해.","","ser"],
   {"cnd":["cf"],"a":[["서윤","천천히 가자고 한 거, 아직도 ‘아니요’로 번역하고 있어?","","smk"]],"b":[["서윤","그날 왜 말 못 했어? 다리 위에서 다 봤어. 입이 세 번 열렸다가 닫혔어.","","ser"]]},
   ["","괜찮은 척할 수도 있었다. 그런데 우리는 이제, 안 괜찮은 사진도 보내기로 한 사이였다."],
+  {"v":"cry"},
   ["정우","무서웠어. 좋은 일이 오면 착오일 거라고, 아직도 그렇게 생각하나 봐. 그 버릇이 새끼손가락 하나로는 안 고쳐지더라.","","sad"],
   ["서윤","…응. 알아. 아빠니까.","","sad"],
   ["서윤","그럼 지금은? 외로워?","","wor"],
   ["정우","가끔. 괜찮다고 안 할게. 가끔 외로워. 근데 목요일에는 여전히 책방에 가. 보리차도 마시고.","","sad"],
+  {"v":""},
   ["서윤","그 정도면… 연재 중이네. 완결이 아니라.","","s"],
   ["","서윤이는 무릎을 끌어안고 강을 봤다. 강 건너 등불이 하나둘 켜졌다."],
   ["서윤","아빠, 2권 제목 정했어. <우리 둘>. 아빠랑 나. 지금은 그게 제일 정확한 제목이야.","","s"],
@@ -2498,7 +2567,7 @@ const BGM = {"rain": {"name": "비 오는 부엌", "file": "audio/rain.mp3", "us
 const SFX = {"choice": {"name": "선택", "file": "audio/choice.mp3", "use": "선택지를 누를 때", "p": "soft wooden UI click, short and gentle"}, "chapter": {"name": "장 시작", "file": "audio/chapter.mp3", "use": "각 장 제목", "p": "soft warm chime with a short piano note, gentle chapter transition"}, "page": {"name": "책장 넘김", "file": "audio/page.mp3", "use": "4장, 원작 책 첫 장을 넘길 때", "p": "single paper page turning slowly in a quiet room, close up"}, "keys": {"name": "키보드", "file": "audio/keys.mp3", "use": "사무실 장면 진입", "p": "mechanical keyboard typing in a quiet office, three seconds, soft"}, "bell": {"name": "책방 문종", "file": "audio/bell.mp3", "use": "책방 장면 진입", "p": "small brass door bell jingling as a shop door opens, cozy bookstore"}, "airport": {"name": "공항 안내음", "file": "audio/airport.mp3", "use": "공항 장면 진입", "p": "airport terminal announcement chime, four soft tones, slight hall reverb, no voice"}, "ring": {"name": "영상통화 수신", "file": "audio/ring.mp3", "use": "영상통화 장면 진입", "p": "gentle smartphone video call ringtone, two short melodic rings"}, "shutter": {"name": "카메라 셔터", "file": "audio/shutter.mp3", "use": "결혼식 사진 장면", "p": "camera shutter click followed by a small group of people laughing warmly"}};
 const SCENE_AUDIO = {"kitchen": ["rain", ""], "yard": ["warm", ""], "desk": ["farewell", ""], "airport": ["farewell", "airport"], "cafe": ["farewell", ""], "street": ["farewell", ""], "office": ["warm", "keys"], "book": ["jisoo", "bell"], "proof": ["reveal", ""], "call": ["reveal", "ring"], "hill": ["spring", ""], "wed": ["spring", ""], "sports": ["child", ""], "officekid": ["child", "keys"], "door": ["farewell", ""], "artroom": ["farewell", ""], "living": ["warm", ""], "busstop": ["rain", ""], "bike": ["child", ""], "beach": ["farewell", ""], "hospital": ["farewell", ""], "kamogawa": ["kyoto", ""], "signing": ["kyoto", "bell"], "kitchen_hair": ["child", ""], "birthday": ["child", ""], "yard_hw": ["warm", ""], "graduation": ["child", ""], "photos": ["farewell", ""], "yard_talk": ["farewell", ""], "kitchen_teen": ["warm", ""], "kimjang": ["warm", ""], "kitchen_lesson": ["warm", ""], "yard_bye": ["farewell", ""], "kansai": ["kyoto", "airport"], "dorm": ["kyoto", ""], "kamo_night": ["kyoto", ""], "cooking": ["farewell", ""], "notice": ["farewell", ""], "songpyeon": ["child", ""], "k1_question": ["rain", ""], "k1_lunch": ["child", ""], "hairpin": ["child", ""], "entrance": ["child", ""], "flu": ["rain", ""], "songpyeon_prep": ["child", ""], "dishes": ["child", ""], "store": ["warm", ""], "school_office": ["farewell", ""], "teen_fight": ["farewell", ""], "framed": ["reveal", ""], "umbrella_teen": ["farewell", ""], "hand_sketch": ["farewell", ""], "ex_window": ["farewell", ""], "peephole": ["warm", ""], "homecome": ["warm", ""], "hangang": ["farewell", ""], "book_window": ["farewell", ""], "book_notice": ["farewell", ""], "hosp_room": ["reveal", ""], "book_night": ["reveal", "bell"], "ex_cafe": ["rain", ""], "trio_call": ["jisoo", "ring"], "pojang": ["jisoo", ""], "campus": ["kyoto", ""], "dorm_kitchen": ["kyoto", ""], "chuseok": ["warm", ""], "wed_call": ["spring", ""], "exhibition": ["kyoto", ""], "lonely": ["rain", ""], "k1_night": ["rain", ""], "friend_visit": ["child", ""], "rain_eaves": ["rain", ""], "grad_party": ["child", ""], "school_gate": ["farewell", ""], "side_job": ["farewell", ""], "mom_call": ["farewell", ""], "scarf": ["warm", ""], "dorm_wall": ["kyoto", ""], "parents_move": ["warm", ""], "valley_trip": ["child", ""], "parents_leave": ["farewell", ""], "aunt_shop": ["warm", ""], "chilsun_sea": ["warm", ""], "side_dishes": ["warm", ""], "uniform": ["farewell", ""], "backs100": ["farewell", ""], "portfolio": ["farewell", ""], "blind_date": ["warm", ""], "allnighter": ["warm", ""], "call_cry": ["reveal", ""], "book_angry": ["jisoo", ""], "kamo_umbrella": ["kyoto", ""], "dorm_two": ["kyoto", ""]};
 // 언어: UI 문구·이름·장면 이름은 여기, 대사 번역은 i18n/en.js, i18n/ja.js (처음 고를 때 불러옴)
-const I18N = {"BGMN": {"en": {"rain": "Rainy Kitchen", "warm": "Afternoon on the Porch", "farewell": "Bound for Kansai", "reveal": "My Dad", "spring": "Spring Days", "child": "Little Hands", "jisoo": "Comma Books", "kyoto": "Spring on the Kamo"}, "ja": {"rain": "雨の台所", "warm": "縁側の午後", "farewell": "関西行き", "reveal": "うちのパパ", "spring": "春の日", "child": "小さな手", "jisoo": "本屋コンマ", "kyoto": "鴨川の春"}}, "UI": {"ko": {"title": "우리 아빠", "tagline": "사랑받지 못한다고 믿었던 아빠와, 그 아빠를 세상에 그려 보인 딸의 이야기. 전 17장, 고른 길에 따라 엔딩 넷.", "continue": "이어하기", "newGame": "처음부터", "newNote": "한 번 더 누르면 저장을 지우고 시작", "gallery": "갤러리", "settings": "설정", "docs": "제작 자료", "autoBadge": "자동", "gearLabel": "메뉴 열기", "bookLab": "<우리 아빠> 중에서", "bookName": "<우리 아빠>", "boxLabel": "다음 대사로 넘기기", "tapStart": "눌러서 시작", "playAgain": "처음부터 다시", "toTitle": "타이틀로", "endings": "엔딩", "scenes": "장면", "menuH": "잠시 멈춤", "selfWorth": "자존감", "resume": "이어서 보기", "auto": "자동 넘김", "autoS": "대사를 저절로 넘깁니다", "log": "지난 대사", "logS": "지나온 대사 다시 읽기", "bare": "그림만 보기", "bareS": "대사창을 잠시 숨깁니다", "full": "전체 화면", "fullS": "화면을 가득 채웁니다", "fullNo": "이 화면에서는 쓸 수 없습니다", "jump": "장 이동", "locked": " · 아직", "sndOn": "소리 켜짐", "sndOff": "소리 꺼짐", "sndS": "배경음과 효과음", "speed": "글자 속도", "slow": "느리게", "normal": "보통", "fast": "빠르게", "instant": "한 번에", "volB": "배경음 크기", "volS": "효과음 크기", "close": "닫기", "keys": "키보드: Space·Enter 넘기기, Esc 메뉴, A 자동, L 지난 대사, H 그림만 보기", "lang": "언어", "art": "그림", "artAnim": "3D 애니메이션", "artIllust": "일러스트", "choice": "선택", "choiceLog": "선택", "think": "속마음", "sms": "문자", "reply": "답장", "smsTag": "(문자) ", "replyTag": "(답장) ", "q": "어떻게 할까.", "eCount": "고른 갈래에 따라 닿는 엔딩입니다. 찾은 엔딩 {0} / 4", "gCount": "이야기에서 본 장면이 여기에 모입니다. {0} / {1}", "endN": "엔딩 {0}", "notYet": "아직 걷지 않은 길", "unseen": "아직 보지 못한 장면", "rollPeople": "함께한 사람들", "rollStory": "이야기", "rollArt": "그림", "rollArtV": "VARCO로 생성", "rollSound": "소리", "rollSoundV": "ElevenLabs로 생성 · 빗소리는 브라우저에서 합성", "rollTrans": "", "rollTransV": "", "rollJourney": "이번 여정", "rollJourneyV": "찾은 엔딩 {0} / 4 · 자존감 {1} / 10 · 본 장면 {2} / {3}", "rollAll": "네 갈래를 모두 걸었습니다", "rollThanks": "함께해 주셔서 고맙습니다", "rollLast": "아빠 밥 먹었어?", "jw": "한정우", "sy": "한서윤", "js": "윤지수"}, "en": {"title": "My Dad", "tagline": "A father who believed he couldn’t be loved, and the daughter who drew him for the whole world to see. 17 chapters, four endings shaped by the paths you choose.", "continue": "Continue", "newGame": "New Game", "newNote": "Tap again to erase your save and start over", "gallery": "Gallery", "settings": "Settings", "docs": "Making Of (Korean)", "autoBadge": "Auto", "gearLabel": "Open menu", "bookLab": "From <My Dad>", "bookName": "<My Dad>", "boxLabel": "Next line", "tapStart": "Tap to begin", "playAgain": "Play Again", "toTitle": "Back to Title", "endings": "Endings", "scenes": "Scenes", "menuH": "Paused", "selfWorth": "Self-worth", "resume": "Resume", "auto": "Auto-advance", "autoS": "Lines advance on their own", "log": "Backlog", "logS": "Reread earlier lines", "bare": "Hide Text", "bareS": "Hide the text box for a moment", "full": "Full Screen", "fullS": "Fill the whole screen", "fullNo": "Not available here", "jump": "Jump to Chapter", "locked": " · locked", "sndOn": "Sound On", "sndOff": "Sound Off", "sndS": "Music and sound effects", "speed": "Text Speed", "slow": "Slow", "normal": "Normal", "fast": "Fast", "instant": "Instant", "volB": "Music Volume", "volS": "Effects Volume", "close": "Close", "keys": "Keyboard: Space/Enter next, Esc menu, A auto, L backlog, H hide text", "lang": "Language", "art": "Art Style", "artAnim": "3D Animation", "artIllust": "Illustration", "choice": "choice", "choiceLog": "Choice", "think": "thinking", "sms": "text", "reply": "reply", "smsTag": "(text) ", "replyTag": "(reply) ", "q": "What should I do?", "eCount": "Which ending you reach depends on the paths you choose. Found {0} / 4", "gCount": "Scenes you’ve seen in the story gather here. {0} / {1}", "endN": "Ending {0}", "notYet": "A path not yet taken", "unseen": "Not seen yet", "rollPeople": "Cast", "rollStory": "Chapters", "rollArt": "Art", "rollArtV": "Generated with VARCO", "rollSound": "Sound", "rollSoundV": "Generated with ElevenLabs · rain synthesized in the browser", "rollTrans": "Translation", "rollTransV": "English translation by Claude", "rollJourney": "This Journey", "rollJourneyV": "Endings found {0} / 4 · Self-worth {1} / 10 · Scenes seen {2} / {3}", "rollAll": "You’ve walked all four paths", "rollThanks": "Thank you for playing", "rollLast": "Dad, did you eat?", "jw": "Han Jeongwoo", "sy": "Han Seoyun", "js": "Yoon Jisoo"}, "ja": {"title": "うちのパパ", "tagline": "愛されないと信じていたパパと、そのパパを世界に描いてみせた娘の物語。全17章、選んだ道によってエンディングは四つ。", "continue": "つづきから", "newGame": "はじめから", "newNote": "もう一度押すとセーブを消してはじめから", "gallery": "ギャラリー", "settings": "設定", "docs": "制作資料（韓国語）", "autoBadge": "オート", "gearLabel": "メニューを開く", "bookLab": "『うちのパパ』より", "bookName": "『うちのパパ』", "boxLabel": "次のセリフへ", "tapStart": "タップしてはじめる", "playAgain": "もう一度はじめから", "toTitle": "タイトルへ", "endings": "エンディング", "scenes": "シーン", "menuH": "一時停止", "selfWorth": "自己肯定感", "resume": "つづける", "auto": "オート", "autoS": "セリフを自動で進めます", "log": "バックログ", "logS": "これまでのセリフを読み返す", "bare": "絵だけ見る", "bareS": "セリフ枠を一時的に隠します", "full": "全画面", "fullS": "画面いっぱいに表示します", "fullNo": "この画面では使えません", "jump": "章を選ぶ", "locked": " · 未読", "sndOn": "サウンド オン", "sndOff": "サウンド オフ", "sndS": "BGMと効果音", "speed": "文字の速さ", "slow": "ゆっくり", "normal": "ふつう", "fast": "はやい", "instant": "一瞬", "volB": "BGMの音量", "volS": "効果音の音量", "close": "閉じる", "keys": "キーボード：Space・Enter 次へ、Esc メニュー、A オート、L バックログ、H 絵だけ見る", "lang": "言語", "art": "絵のスタイル", "artAnim": "3Dアニメ", "artIllust": "イラスト", "choice": "選択", "choiceLog": "選択", "think": "心の声", "sms": "メッセージ", "reply": "返信", "smsTag": "(メッセージ) ", "replyTag": "(返信) ", "q": "どうしようか。", "eCount": "選んだ道によってたどり着くエンディングです。見つけたエンディング {0} / 4", "gCount": "物語で見たシーンがここに集まります。{0} / {1}", "endN": "エンディング {0}", "notYet": "まだ歩いていない道", "unseen": "まだ見ていないシーン", "rollPeople": "登場人物", "rollStory": "物語", "rollArt": "絵", "rollArtV": "VARCOで生成", "rollSound": "音", "rollSoundV": "ElevenLabsで生成・雨音はブラウザで合成", "rollTrans": "翻訳", "rollTransV": "日本語訳 Claude", "rollJourney": "今回の旅", "rollJourneyV": "見つけたエンディング {0} / 4・自己肯定感 {1} / 10・見たシーン {2} / {3}", "rollAll": "四つの道をすべて歩きました", "rollThanks": "最後までありがとうございました", "rollLast": "パパ、ごはん食べた？", "jw": "ハン・ジョンウ", "sy": "ハン・ソユン", "js": "ユン・ジス"}}, "NAMES": {"en": {"정우": "Jeongwoo", "서윤": "Seoyun", "지수": "Jisoo", "어머니": "Mother", "아버지": "Father", "박민호": "Minho", "정민": "Jeongmin", "혜린": "Hyerin", "은정": "Eunjeong", "민경": "Minkyung", "책": "<My Dad>", "담임 선생님": "Homeroom Teacher", "대표": "CEO", "팀장": "Team Leader", "지호 엄마": "Jiho’s Mom", "친구": "Friend", "소개팅 상대": "Blind Date", "지훈": "Jihun", "지호": "Jiho", "점원": "Clerk", "경비 아저씨": "Security Guard", "빵집 할아버지": "Old Baker", "단골 할아버지": "Old Regular", "아이": "Child", "남자": "Man", "할아버지": "Old Man"}, "ja": {"정우": "ジョンウ", "서윤": "ソユン", "지수": "ジス", "어머니": "母", "아버지": "父", "박민호": "ミンホ", "정민": "ジョンミン", "혜린": "ヘリン", "은정": "ウンジョン", "민경": "ミンギョン", "책": "『うちのパパ』", "담임 선생님": "担任の先生", "대표": "代表", "팀장": "チーム長", "지호 엄마": "ジホのママ", "친구": "友達", "소개팅 상대": "紹介相手", "지훈": "ジフン", "지호": "ジホ", "점원": "店員", "경비 아저씨": "警備員さん", "빵집 할아버지": "パン屋のおじいさん", "단골 할아버지": "常連のおじいさん", "아이": "子ども", "남자": "男", "할아버지": "おじいさん"}}, "BGN": {"en": {"kitchen": "Rainy Evening Kitchen", "k1_question": "A Question at 11 p.m.", "k1_lunch": "The Empty Lunch Box", "yard": "The Porch at My Parents’", "hairpin": "A Yellow Hairpin by the Stationery Shop", "entrance": "The First Day of School", "officekid": "The Office on Saturday", "kitchen_hair": "Breakfast, Lopsided Pigtails", "yard_hw": "The Porch in Summer Break", "sports": "Elementary School Sports Day", "birthday": "A Birthday of Fifty Balloons", "flu": "The Night of Flu and Sleet", "cooking": "The Cooking Room in Spring", "notice": "The Crumpled School Notice", "songpyeon_prep": "Mother’s Songpyeon Lesson", "songpyeon": "Songpyeon Class in Autumn", "dishes": "A Hug in Rubber Gloves", "bike": "Grandpa’s Bicycle", "beach": "The East Sea at Sunset", "photos": "The Album on the Wardrobe", "graduation": "Elementary School Graduation", "door": "Outside the Closed Door", "store": "The Convenience Store at Midnight", "office": "Studio Moonlight Office", "school_office": "The Teachers’ Office", "teen_fight": "The Slammed Door", "yard_talk": "Three on the Porch at Dusk", "street": "Outside the Store After Work", "framed": "<The Plate Outside the Door>", "umbrella_teen": "The Tilted Umbrella", "artroom": "The Art Academy Studio", "hand_sketch": "Sketching Hands", "cafe": "The Blind-Date Café", "ex_window": "Across from the Café", "kitchen_teen": "The Hiragana Fridge", "peephole": "Through the Peephole", "living": "The Living Room, Alone", "kimjang": "The Last Kimjang", "desk": "2 a.m., Seoyun’s Room", "homecome": "Home from the Interview", "kitchen_lesson": "Kimbap Lesson", "yard_bye": "A Week Before She Leaves", "airport": "Incheon Airport Departures", "hangang": "The Han River in March", "bakery": "A Red Bean Bun from the Bakery", "busstop": "The Rainy Bus Stop", "book": "Comma Books, Down the Alley", "hospital": "The ER Corridor", "blackout": "The Bookstore by Candlelight", "alley_dawn": "The Alley at Dawn, After the Typhoon", "call": "Video Call, Seoul and Kyoto", "reading": "Mr. Barley Tea’s Reading", "lobby": "The Ground-Floor Lobby", "book_window": "Two People Through the Window", "book_notice": "The Closing Notice", "hosp_room": "The Hospital Room at Dawn", "proof": "The Source Materials, Friday Night", "book_night": "The Stained Book", "ex_cafe": "A Café in the Sleet", "trio_call": "The Three-Way Interview", "pojang": "The Street Stall in the First Snow", "kansai": "Kansai Airport", "signing": "Book Signing in Kyoto", "kamogawa": "The Banks of the Kamo River", "dorm": "Six Tatami Mats", "campus": "The Professor’s Office", "kamo_night": "The Kamo River at Night", "dorm_kitchen": "Knife Sounds in the Shared Kitchen", "chuseok": "Chuseok, the Flowered Apron", "hill": "Sunset on the Hill", "wed": "A Small Spring Wedding", "wed_call": "Congratulations Through the Screen", "lonely": "The Bus Stop in the Sleet", "k1_night": "The Kitchen at 11 p.m.", "friend_visit": "The Day a Friend Came Over", "rain_eaves": "Under the Guesthouse Eaves", "grad_party": "The Two-Person Award", "school_gate": "The Closed School Gate", "side_job": "Weekend Side Jobs", "mom_call": "A Call After Ten Years", "scarf": "The TV That Was Off", "candle_kimbap": "Candles and Kimbap", "dorm_wall": "A Wall Full of Drawings", "uniform": "The Uniform Shop", "backs100": "A Hundred Backs", "portfolio": "Choosing Twenty", "blind_date": "The First Blind Date", "allnighter": "Dawn of the Fifth Day", "call_cry": "I Chose You Every Day", "book_angry": "\"Anything Is Fine\"", "kamo_umbrella": "Spring Rain on the Kamo", "dorm_two": "A Morning for Two", "parents_move": "Dinner for Four", "valley_trip": "Six at the Valley", "parents_leave": "The Little Truck", "aunt_shop": "A Day Out with Auntie", "chilsun_sea": "The Sea at Seventy", "side_dishes": "Every Other Saturday", "exhibition": "The Graduation Show"}, "ja": {"kitchen": "雨の夕方の台所", "k1_question": "夜十一時の質問", "k1_lunch": "空っぽのお弁当箱", "yard": "実家の縁側", "hairpin": "文房具屋の前、黄色いヘアピン", "entrance": "入学式の日", "officekid": "土曜日のオフィス", "kitchen_hair": "朝の食卓、ちぐはぐの髪", "yard_hw": "夏休みの縁側", "sports": "小学校の運動会", "birthday": "風船五十個の誕生日", "flu": "みぞれの降るインフルエンザの夜", "cooking": "春の調理室", "notice": "くしゃくしゃのお便り", "songpyeon_prep": "母のソンピョン教室", "songpyeon": "秋のソンピョン教室", "dishes": "ゴム手袋のハグ", "bike": "おじいちゃんの自転車", "beach": "日暮れの東海", "photos": "たんすの上のアルバム", "graduation": "小学校の卒業式", "door": "閉じたドアの前", "store": "真夜中のコンビニ", "office": "スタジオ月あかりのオフィス", "school_office": "職員室", "teen_fight": "強く閉められたドア", "yard_talk": "夕暮れの縁側の三人", "street": "帰り道のコンビニ前", "framed": "『ドアの前の皿』", "umbrella_teen": "傾いた傘", "artroom": "美術予備校の実技室", "hand_sketch": "手のクロッキー", "cafe": "紹介で会うカフェ", "ex_window": "カフェの向かいの通り", "kitchen_teen": "ひらがなの冷蔵庫", "peephole": "ドアスコープの向こう", "living": "ひとり残された居間", "kimjang": "最後のキムジャン", "desk": "午前二時、ソユンの部屋", "homecome": "面接から帰った日", "kitchen_lesson": "キンパ教室", "yard_bye": "出国一週間前", "airport": "仁川空港の出国ロビー", "hangang": "三月の漢江", "bakery": "町のパン屋のあんパン", "busstop": "雨のバス停", "book": "路地の本屋「コンマ」", "hospital": "救急外来の廊下", "blackout": "ろうそくの灯る本屋", "alley_dawn": "台風が過ぎた明け方の路地", "call": "ビデオ通話、ソウルと京都", "reading": "麦茶のおじさんの読み聞かせ会", "lobby": "一階のロビー", "book_window": "ガラス窓の向こうの二人", "book_notice": "閉店のお知らせ", "hosp_room": "明け方の病室", "proof": "金曜の夜の原作資料", "book_night": "しみのある本", "ex_cafe": "みぞれの降るカフェ", "trio_call": "三人通話の面接", "pojang": "初雪の屋台", "kansai": "関西空港", "signing": "京都の書店のサイン会", "kamogawa": "鴨川のほとり", "dorm": "六畳の部屋", "campus": "教授の研究室", "kamo_night": "夜の鴨川", "dorm_kitchen": "共用キッチンの包丁の音", "chuseok": "チュソク、花柄のエプロン", "hill": "裏山の夕焼け", "wed": "春の小さな結婚式", "wed_call": "画面越しのお祝い", "lonely": "みぞれのバス停", "k1_night": "夜十一時の台所", "friend_visit": "友だちが来た日", "rain_eaves": "民宿の軒下", "grad_party": "二人分の賞", "school_gate": "閉ざされた校門", "side_job": "週末の副業", "mom_call": "十年ぶりの電話", "scarf": "消えたままのテレビ", "candle_kimbap": "ろうそくとキンパ", "dorm_wall": "絵でいっぱいの壁", "uniform": "制服の店", "backs100": "百枚の背中", "portfolio": "二十枚を選ぶ", "blind_date": "最初のお見合い", "allnighter": "五日目の夜明け", "call_cry": "毎日選んでた", "book_angry": "「なんでもいい」", "kamo_umbrella": "鴨川の春雨", "dorm_two": "二人だけの朝", "parents_move": "四人の夕食", "valley_trip": "六人の渓谷", "parents_leave": "小さなトラック", "aunt_shop": "おばさんとデパート", "chilsun_sea": "七十歳の海", "side_dishes": "隔週の土曜日", "exhibition": "卒業展示"}}, "AGE": {"en": {"1": "Seoyun 7 · Dad 34", "2": "Seoyun 8–9 · Grades 1–3", "3": "Seoyun 10–11 · Grades 4–5", "4": "Seoyun 12 · Grade 6", "5": "Seoyun 13–15 · Middle School", "6": "Seoyun 16–18 · High School", "7": "Seoyun 19 · The Exam Winter", "8": "Seoyun 20 · Dad 47", "9": "A Year Alone", "10": "The Next Spring · Dad 48", "11": "Late Summer That Year", "12": "Late Autumn That Year", "13": "Early Winter That Year", "14": "December That Year", "15": "The Next Spring, Kyoto · Dad 49", "16": "Five Days in Kyoto", "17": "After That"}, "ja": {"1": "ソユン7歳・パパ34歳", "2": "ソユン8〜9歳・小学1〜3年生", "3": "ソユン10〜11歳・4〜5年生", "4": "ソユン12歳・6年生", "5": "ソユン13〜15歳・中学生", "6": "ソユン16〜18歳・高校生", "7": "ソユン19歳・受験の冬", "8": "ソユン20歳・パパ47歳", "9": "ひとりになった一年", "10": "翌年の春・パパ48歳", "11": "その年の晩夏", "12": "その年の晩秋", "13": "その年の初冬", "14": "その年の十二月", "15": "翌年の春、京都・パパ49歳", "16": "京都の五日間", "17": "それから"}}, "ENDS": {"en": {"A": {"t": "Our Family", "got": "The path where you confessed, and stayed honest with your daughter to the end.", "hint": "Take one more step toward love, and toward your daughter."}, "B": {"t": "A Spring for Two", "got": "The path where you found courage in love, but traded only okay-looking photos with your daughter.", "hint": "What if you found courage, but never asked what lay behind someone’s “I’m fine”?"}, "C": {"t": "The Two of Us", "got": "The path where you never said it, but were honest with your daughter, at least.", "hint": "What if you swallowed your words by the river, but stayed honest with your daughter?"}, "D": {"t": "A Nice Guy", "got": "The path where you couldn’t get close to anyone, or open up to anyone.", "hint": "The winter of a man who only ever has one umbrella."}}, "ja": {"A": {"t": "うちの家族", "got": "想いを伝え、娘にも最後まで正直だった道。", "hint": "恋にも娘にも、一歩ずつ近づいてみて。"}, "B": {"t": "ふたりの春", "got": "恋には勇気を出したけれど、娘とは大丈夫な写真だけをやりとりした道。", "hint": "勇気は出したのに、誰かの「大丈夫」の裏を聞かなかったら。"}, "C": {"t": "わたしたちふたり", "got": "最後まで言えなかったけれど、娘にだけは正直だった道。", "hint": "川べりで言葉を飲みこんでも、娘にだけは正直だったら。"}, "D": {"t": "いい人のおじさん", "got": "誰にも近づけず、誰にも打ち明けられなかった道。", "hint": "いつも傘が一本しかない人の冬。"}}}};
+const I18N = {"BGMN": {"en": {"rain": "Rainy Kitchen", "warm": "Afternoon on the Porch", "farewell": "Bound for Kansai", "reveal": "My Dad", "spring": "Spring Days", "child": "Little Hands", "jisoo": "Comma Books", "kyoto": "Spring on the Kamo"}, "ja": {"rain": "雨の台所", "warm": "縁側の午後", "farewell": "関西行き", "reveal": "うちのパパ", "spring": "春の日", "child": "小さな手", "jisoo": "本屋コンマ", "kyoto": "鴨川の春"}}, "UI": {"ko": {"title": "우리 아빠", "tagline": "사랑받지 못한다고 믿었던 아빠와, 그 아빠를 세상에 그려 보인 딸의 이야기. 전 17장, 고른 길에 따라 엔딩 넷.", "continue": "이어하기", "newGame": "처음부터", "newNote": "한 번 더 누르면 저장을 지우고 시작", "gallery": "갤러리", "settings": "설정", "docs": "제작 자료", "autoBadge": "자동", "gearLabel": "메뉴 열기", "bookLab": "<우리 아빠> 중에서", "bookName": "<우리 아빠>", "boxLabel": "다음 대사로 넘기기", "tapStart": "눌러서 시작", "playAgain": "처음부터 다시", "toTitle": "타이틀로", "endings": "엔딩", "scenes": "장면", "menuH": "잠시 멈춤", "selfWorth": "자존감", "resume": "이어서 보기", "auto": "자동 넘김", "autoS": "대사를 저절로 넘깁니다", "log": "지난 대사", "logS": "지나온 대사 다시 읽기", "bare": "그림만 보기", "bareS": "대사창을 잠시 숨깁니다", "full": "전체 화면", "fullS": "화면을 가득 채웁니다", "fullNo": "이 화면에서는 쓸 수 없습니다", "jump": "장 이동", "locked": " · 아직", "sndOn": "소리 켜짐", "sndOff": "소리 꺼짐", "sndS": "배경음과 효과음", "emo": "감정 연출", "emoS": "표정에 따라 장면의 빛과 효과가 바뀝니다", "speed": "글자 속도", "slow": "느리게", "normal": "보통", "fast": "빠르게", "instant": "한 번에", "volB": "배경음 크기", "volS": "효과음 크기", "close": "닫기", "keys": "키보드: Space·Enter 넘기기, Esc 메뉴, A 자동, L 지난 대사, H 그림만 보기", "lang": "언어", "art": "그림", "artAnim": "3D 애니메이션", "artIllust": "일러스트", "choice": "선택", "choiceLog": "선택", "think": "속마음", "sms": "문자", "reply": "답장", "smsTag": "(문자) ", "replyTag": "(답장) ", "q": "어떻게 할까.", "eCount": "고른 갈래에 따라 닿는 엔딩입니다. 찾은 엔딩 {0} / 4", "gCount": "이야기에서 본 장면이 여기에 모입니다. {0} / {1}", "endN": "엔딩 {0}", "notYet": "아직 걷지 않은 길", "unseen": "아직 보지 못한 장면", "rollPeople": "함께한 사람들", "rollStory": "이야기", "rollArt": "그림", "rollArtV": "VARCO로 생성", "rollSound": "소리", "rollSoundV": "ElevenLabs로 생성 · 빗소리는 브라우저에서 합성", "rollTrans": "", "rollTransV": "", "rollJourney": "이번 여정", "rollJourneyV": "찾은 엔딩 {0} / 4 · 자존감 {1} / 10 · 본 장면 {2} / {3}", "rollAll": "네 갈래를 모두 걸었습니다", "rollThanks": "함께해 주셔서 고맙습니다", "rollLast": "아빠 밥 먹었어?", "jw": "한정우", "sy": "한서윤", "js": "윤지수"}, "en": {"title": "My Dad", "tagline": "A father who believed he couldn’t be loved, and the daughter who drew him for the whole world to see. 17 chapters, four endings shaped by the paths you choose.", "continue": "Continue", "newGame": "New Game", "newNote": "Tap again to erase your save and start over", "gallery": "Gallery", "settings": "Settings", "docs": "Making Of (Korean)", "autoBadge": "Auto", "gearLabel": "Open menu", "bookLab": "From <My Dad>", "bookName": "<My Dad>", "boxLabel": "Next line", "tapStart": "Tap to begin", "playAgain": "Play Again", "toTitle": "Back to Title", "endings": "Endings", "scenes": "Scenes", "menuH": "Paused", "selfWorth": "Self-worth", "resume": "Resume", "auto": "Auto-advance", "autoS": "Lines advance on their own", "log": "Backlog", "logS": "Reread earlier lines", "bare": "Hide Text", "bareS": "Hide the text box for a moment", "full": "Full Screen", "fullS": "Fill the whole screen", "fullNo": "Not available here", "jump": "Jump to Chapter", "locked": " · locked", "sndOn": "Sound On", "sndOff": "Sound Off", "sndS": "Music and sound effects", "emo": "Emotion Effects", "emoS": "Scene light and effects follow the faces", "speed": "Text Speed", "slow": "Slow", "normal": "Normal", "fast": "Fast", "instant": "Instant", "volB": "Music Volume", "volS": "Effects Volume", "close": "Close", "keys": "Keyboard: Space/Enter next, Esc menu, A auto, L backlog, H hide text", "lang": "Language", "art": "Art Style", "artAnim": "3D Animation", "artIllust": "Illustration", "choice": "choice", "choiceLog": "Choice", "think": "thinking", "sms": "text", "reply": "reply", "smsTag": "(text) ", "replyTag": "(reply) ", "q": "What should I do?", "eCount": "Which ending you reach depends on the paths you choose. Found {0} / 4", "gCount": "Scenes you’ve seen in the story gather here. {0} / {1}", "endN": "Ending {0}", "notYet": "A path not yet taken", "unseen": "Not seen yet", "rollPeople": "Cast", "rollStory": "Chapters", "rollArt": "Art", "rollArtV": "Generated with VARCO", "rollSound": "Sound", "rollSoundV": "Generated with ElevenLabs · rain synthesized in the browser", "rollTrans": "Translation", "rollTransV": "English translation by Claude", "rollJourney": "This Journey", "rollJourneyV": "Endings found {0} / 4 · Self-worth {1} / 10 · Scenes seen {2} / {3}", "rollAll": "You’ve walked all four paths", "rollThanks": "Thank you for playing", "rollLast": "Dad, did you eat?", "jw": "Han Jeongwoo", "sy": "Han Seoyun", "js": "Yoon Jisoo"}, "ja": {"title": "うちのパパ", "tagline": "愛されないと信じていたパパと、そのパパを世界に描いてみせた娘の物語。全17章、選んだ道によってエンディングは四つ。", "continue": "つづきから", "newGame": "はじめから", "newNote": "もう一度押すとセーブを消してはじめから", "gallery": "ギャラリー", "settings": "設定", "docs": "制作資料（韓国語）", "autoBadge": "オート", "gearLabel": "メニューを開く", "bookLab": "『うちのパパ』より", "bookName": "『うちのパパ』", "boxLabel": "次のセリフへ", "tapStart": "タップしてはじめる", "playAgain": "もう一度はじめから", "toTitle": "タイトルへ", "endings": "エンディング", "scenes": "シーン", "menuH": "一時停止", "selfWorth": "自己肯定感", "resume": "つづける", "auto": "オート", "autoS": "セリフを自動で進めます", "log": "バックログ", "logS": "これまでのセリフを読み返す", "bare": "絵だけ見る", "bareS": "セリフ枠を一時的に隠します", "full": "全画面", "fullS": "画面いっぱいに表示します", "fullNo": "この画面では使えません", "jump": "章を選ぶ", "locked": " · 未読", "sndOn": "サウンド オン", "sndOff": "サウンド オフ", "sndS": "BGMと効果音", "emo": "感情演出", "emoS": "表情に合わせて場面の光と効果が変わります", "speed": "文字の速さ", "slow": "ゆっくり", "normal": "ふつう", "fast": "はやい", "instant": "一瞬", "volB": "BGMの音量", "volS": "効果音の音量", "close": "閉じる", "keys": "キーボード：Space・Enter 次へ、Esc メニュー、A オート、L バックログ、H 絵だけ見る", "lang": "言語", "art": "絵のスタイル", "artAnim": "3Dアニメ", "artIllust": "イラスト", "choice": "選択", "choiceLog": "選択", "think": "心の声", "sms": "メッセージ", "reply": "返信", "smsTag": "(メッセージ) ", "replyTag": "(返信) ", "q": "どうしようか。", "eCount": "選んだ道によってたどり着くエンディングです。見つけたエンディング {0} / 4", "gCount": "物語で見たシーンがここに集まります。{0} / {1}", "endN": "エンディング {0}", "notYet": "まだ歩いていない道", "unseen": "まだ見ていないシーン", "rollPeople": "登場人物", "rollStory": "物語", "rollArt": "絵", "rollArtV": "VARCOで生成", "rollSound": "音", "rollSoundV": "ElevenLabsで生成・雨音はブラウザで合成", "rollTrans": "翻訳", "rollTransV": "日本語訳 Claude", "rollJourney": "今回の旅", "rollJourneyV": "見つけたエンディング {0} / 4・自己肯定感 {1} / 10・見たシーン {2} / {3}", "rollAll": "四つの道をすべて歩きました", "rollThanks": "最後までありがとうございました", "rollLast": "パパ、ごはん食べた？", "jw": "ハン・ジョンウ", "sy": "ハン・ソユン", "js": "ユン・ジス"}}, "NAMES": {"en": {"정우": "Jeongwoo", "서윤": "Seoyun", "지수": "Jisoo", "어머니": "Mother", "아버지": "Father", "박민호": "Minho", "정민": "Jeongmin", "혜린": "Hyerin", "은정": "Eunjeong", "민경": "Minkyung", "책": "<My Dad>", "담임 선생님": "Homeroom Teacher", "대표": "CEO", "팀장": "Team Leader", "지호 엄마": "Jiho’s Mom", "친구": "Friend", "소개팅 상대": "Blind Date", "지훈": "Jihun", "지호": "Jiho", "점원": "Clerk", "경비 아저씨": "Security Guard", "빵집 할아버지": "Old Baker", "단골 할아버지": "Old Regular", "아이": "Child", "남자": "Man", "할아버지": "Old Man"}, "ja": {"정우": "ジョンウ", "서윤": "ソユン", "지수": "ジス", "어머니": "母", "아버지": "父", "박민호": "ミンホ", "정민": "ジョンミン", "혜린": "ヘリン", "은정": "ウンジョン", "민경": "ミンギョン", "책": "『うちのパパ』", "담임 선생님": "担任の先生", "대표": "代表", "팀장": "チーム長", "지호 엄마": "ジホのママ", "친구": "友達", "소개팅 상대": "紹介相手", "지훈": "ジフン", "지호": "ジホ", "점원": "店員", "경비 아저씨": "警備員さん", "빵집 할아버지": "パン屋のおじいさん", "단골 할아버지": "常連のおじいさん", "아이": "子ども", "남자": "男", "할아버지": "おじいさん"}}, "BGN": {"en": {"kitchen": "Rainy Evening Kitchen", "k1_question": "A Question at 11 p.m.", "k1_lunch": "The Empty Lunch Box", "yard": "The Porch at My Parents’", "hairpin": "A Yellow Hairpin by the Stationery Shop", "entrance": "The First Day of School", "officekid": "The Office on Saturday", "kitchen_hair": "Breakfast, Lopsided Pigtails", "yard_hw": "The Porch in Summer Break", "sports": "Elementary School Sports Day", "birthday": "A Birthday of Fifty Balloons", "flu": "The Night of Flu and Sleet", "cooking": "The Cooking Room in Spring", "notice": "The Crumpled School Notice", "songpyeon_prep": "Mother’s Songpyeon Lesson", "songpyeon": "Songpyeon Class in Autumn", "dishes": "A Hug in Rubber Gloves", "bike": "Grandpa’s Bicycle", "beach": "The East Sea at Sunset", "photos": "The Album on the Wardrobe", "graduation": "Elementary School Graduation", "door": "Outside the Closed Door", "store": "The Convenience Store at Midnight", "office": "Studio Moonlight Office", "school_office": "The Teachers’ Office", "teen_fight": "The Slammed Door", "yard_talk": "Three on the Porch at Dusk", "street": "Outside the Store After Work", "framed": "<The Plate Outside the Door>", "umbrella_teen": "The Tilted Umbrella", "artroom": "The Art Academy Studio", "hand_sketch": "Sketching Hands", "cafe": "The Blind-Date Café", "ex_window": "Across from the Café", "kitchen_teen": "The Hiragana Fridge", "peephole": "Through the Peephole", "living": "The Living Room, Alone", "kimjang": "The Last Kimjang", "desk": "2 a.m., Seoyun’s Room", "homecome": "Home from the Interview", "kitchen_lesson": "Kimbap Lesson", "yard_bye": "A Week Before She Leaves", "airport": "Incheon Airport Departures", "hangang": "The Han River in March", "bakery": "A Red Bean Bun from the Bakery", "busstop": "The Rainy Bus Stop", "book": "Comma Books, Down the Alley", "hospital": "The ER Corridor", "blackout": "The Bookstore by Candlelight", "alley_dawn": "The Alley at Dawn, After the Typhoon", "call": "Video Call, Seoul and Kyoto", "reading": "Mr. Barley Tea’s Reading", "lobby": "The Ground-Floor Lobby", "book_window": "Two People Through the Window", "book_notice": "The Closing Notice", "hosp_room": "The Hospital Room at Dawn", "proof": "The Source Materials, Friday Night", "book_night": "The Stained Book", "ex_cafe": "A Café in the Sleet", "trio_call": "The Three-Way Interview", "pojang": "The Street Stall in the First Snow", "kansai": "Kansai Airport", "signing": "Book Signing in Kyoto", "kamogawa": "The Banks of the Kamo River", "dorm": "Six Tatami Mats", "campus": "The Professor’s Office", "kamo_night": "The Kamo River at Night", "dorm_kitchen": "Knife Sounds in the Shared Kitchen", "chuseok": "Chuseok, the Flowered Apron", "hill": "Sunset on the Hill", "wed": "A Small Spring Wedding", "wed_call": "Congratulations Through the Screen", "lonely": "The Bus Stop in the Sleet", "k1_night": "The Kitchen at 11 p.m.", "friend_visit": "The Day a Friend Came Over", "rain_eaves": "Under the Guesthouse Eaves", "grad_party": "The Two-Person Award", "school_gate": "The Closed School Gate", "side_job": "Weekend Side Jobs", "mom_call": "A Call After Ten Years", "scarf": "The TV That Was Off", "candle_kimbap": "Candles and Kimbap", "dorm_wall": "A Wall Full of Drawings", "uniform": "The Uniform Shop", "backs100": "A Hundred Backs", "portfolio": "Choosing Twenty", "blind_date": "The First Blind Date", "allnighter": "Dawn of the Fifth Day", "call_cry": "I Chose You Every Day", "book_angry": "\"Anything Is Fine\"", "kamo_umbrella": "Spring Rain on the Kamo", "dorm_two": "A Morning for Two", "parents_move": "Dinner for Four", "valley_trip": "Six at the Valley", "parents_leave": "The Little Truck", "aunt_shop": "A Day Out with Auntie", "chilsun_sea": "The Sea at Seventy", "side_dishes": "Every Other Saturday", "exhibition": "The Graduation Show"}, "ja": {"kitchen": "雨の夕方の台所", "k1_question": "夜十一時の質問", "k1_lunch": "空っぽのお弁当箱", "yard": "実家の縁側", "hairpin": "文房具屋の前、黄色いヘアピン", "entrance": "入学式の日", "officekid": "土曜日のオフィス", "kitchen_hair": "朝の食卓、ちぐはぐの髪", "yard_hw": "夏休みの縁側", "sports": "小学校の運動会", "birthday": "風船五十個の誕生日", "flu": "みぞれの降るインフルエンザの夜", "cooking": "春の調理室", "notice": "くしゃくしゃのお便り", "songpyeon_prep": "母のソンピョン教室", "songpyeon": "秋のソンピョン教室", "dishes": "ゴム手袋のハグ", "bike": "おじいちゃんの自転車", "beach": "日暮れの東海", "photos": "たんすの上のアルバム", "graduation": "小学校の卒業式", "door": "閉じたドアの前", "store": "真夜中のコンビニ", "office": "スタジオ月あかりのオフィス", "school_office": "職員室", "teen_fight": "強く閉められたドア", "yard_talk": "夕暮れの縁側の三人", "street": "帰り道のコンビニ前", "framed": "『ドアの前の皿』", "umbrella_teen": "傾いた傘", "artroom": "美術予備校の実技室", "hand_sketch": "手のクロッキー", "cafe": "紹介で会うカフェ", "ex_window": "カフェの向かいの通り", "kitchen_teen": "ひらがなの冷蔵庫", "peephole": "ドアスコープの向こう", "living": "ひとり残された居間", "kimjang": "最後のキムジャン", "desk": "午前二時、ソユンの部屋", "homecome": "面接から帰った日", "kitchen_lesson": "キンパ教室", "yard_bye": "出国一週間前", "airport": "仁川空港の出国ロビー", "hangang": "三月の漢江", "bakery": "町のパン屋のあんパン", "busstop": "雨のバス停", "book": "路地の本屋「コンマ」", "hospital": "救急外来の廊下", "blackout": "ろうそくの灯る本屋", "alley_dawn": "台風が過ぎた明け方の路地", "call": "ビデオ通話、ソウルと京都", "reading": "麦茶のおじさんの読み聞かせ会", "lobby": "一階のロビー", "book_window": "ガラス窓の向こうの二人", "book_notice": "閉店のお知らせ", "hosp_room": "明け方の病室", "proof": "金曜の夜の原作資料", "book_night": "しみのある本", "ex_cafe": "みぞれの降るカフェ", "trio_call": "三人通話の面接", "pojang": "初雪の屋台", "kansai": "関西空港", "signing": "京都の書店のサイン会", "kamogawa": "鴨川のほとり", "dorm": "六畳の部屋", "campus": "教授の研究室", "kamo_night": "夜の鴨川", "dorm_kitchen": "共用キッチンの包丁の音", "chuseok": "チュソク、花柄のエプロン", "hill": "裏山の夕焼け", "wed": "春の小さな結婚式", "wed_call": "画面越しのお祝い", "lonely": "みぞれのバス停", "k1_night": "夜十一時の台所", "friend_visit": "友だちが来た日", "rain_eaves": "民宿の軒下", "grad_party": "二人分の賞", "school_gate": "閉ざされた校門", "side_job": "週末の副業", "mom_call": "十年ぶりの電話", "scarf": "消えたままのテレビ", "candle_kimbap": "ろうそくとキンパ", "dorm_wall": "絵でいっぱいの壁", "uniform": "制服の店", "backs100": "百枚の背中", "portfolio": "二十枚を選ぶ", "blind_date": "最初のお見合い", "allnighter": "五日目の夜明け", "call_cry": "毎日選んでた", "book_angry": "「なんでもいい」", "kamo_umbrella": "鴨川の春雨", "dorm_two": "二人だけの朝", "parents_move": "四人の夕食", "valley_trip": "六人の渓谷", "parents_leave": "小さなトラック", "aunt_shop": "おばさんとデパート", "chilsun_sea": "七十歳の海", "side_dishes": "隔週の土曜日", "exhibition": "卒業展示"}}, "AGE": {"en": {"1": "Seoyun 7 · Dad 34", "2": "Seoyun 8–9 · Grades 1–3", "3": "Seoyun 10–11 · Grades 4–5", "4": "Seoyun 12 · Grade 6", "5": "Seoyun 13–15 · Middle School", "6": "Seoyun 16–18 · High School", "7": "Seoyun 19 · The Exam Winter", "8": "Seoyun 20 · Dad 47", "9": "A Year Alone", "10": "The Next Spring · Dad 48", "11": "Late Summer That Year", "12": "Late Autumn That Year", "13": "Early Winter That Year", "14": "December That Year", "15": "The Next Spring, Kyoto · Dad 49", "16": "Five Days in Kyoto", "17": "After That"}, "ja": {"1": "ソユン7歳・パパ34歳", "2": "ソユン8〜9歳・小学1〜3年生", "3": "ソユン10〜11歳・4〜5年生", "4": "ソユン12歳・6年生", "5": "ソユン13〜15歳・中学生", "6": "ソユン16〜18歳・高校生", "7": "ソユン19歳・受験の冬", "8": "ソユン20歳・パパ47歳", "9": "ひとりになった一年", "10": "翌年の春・パパ48歳", "11": "その年の晩夏", "12": "その年の晩秋", "13": "その年の初冬", "14": "その年の十二月", "15": "翌年の春、京都・パパ49歳", "16": "京都の五日間", "17": "それから"}}, "ENDS": {"en": {"A": {"t": "Our Family", "got": "The path where you confessed, and stayed honest with your daughter to the end.", "hint": "Take one more step toward love, and toward your daughter."}, "B": {"t": "A Spring for Two", "got": "The path where you found courage in love, but traded only okay-looking photos with your daughter.", "hint": "What if you found courage, but never asked what lay behind someone’s “I’m fine”?"}, "C": {"t": "The Two of Us", "got": "The path where you never said it, but were honest with your daughter, at least.", "hint": "What if you swallowed your words by the river, but stayed honest with your daughter?"}, "D": {"t": "A Nice Guy", "got": "The path where you couldn’t get close to anyone, or open up to anyone.", "hint": "The winter of a man who only ever has one umbrella."}}, "ja": {"A": {"t": "うちの家族", "got": "想いを伝え、娘にも最後まで正直だった道。", "hint": "恋にも娘にも、一歩ずつ近づいてみて。"}, "B": {"t": "ふたりの春", "got": "恋には勇気を出したけれど、娘とは大丈夫な写真だけをやりとりした道。", "hint": "勇気は出したのに、誰かの「大丈夫」の裏を聞かなかったら。"}, "C": {"t": "わたしたちふたり", "got": "最後まで言えなかったけれど、娘にだけは正直だった道。", "hint": "川べりで言葉を飲みこんでも、娘にだけは正直だったら。"}, "D": {"t": "いい人のおじさん", "got": "誰にも近づけず、誰にも打ち明けられなかった道。", "hint": "いつも傘が一本しかない人の冬。"}}}};
 // 얼굴: 장 번호에 따라 나이별 표정 세트(images/face_세트_표정.webp)를 고릅니다.
 const FACE = {
   "정우": ch => ch<=4 ? "jw30" : "jw40",
@@ -2509,7 +2578,7 @@ const FACE = {
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const SAVE = "uri-appa-save-6", SEEN = "uri-appa-seen", CONF = "uri-appa-conf", ENDK = "uri-appa-endings", MAXK = "uri-appa-maxch";
+const SAVE = "uri-appa-save-7", OLDSAVE = "uri-appa-save-6", SEEN = "uri-appa-seen", CONF = "uri-appa-conf", ENDK = "uri-appa-endings", MAXK = "uri-appa-maxch";
 const load = (k, d) => { try{ const v = JSON.parse(localStorage.getItem(k)); return v ?? d; }catch(e){ return d; } };
 const store = (k, v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
 const fresh = () => ({i:0, reply:null, ri:0, score:0, log:[], f:{}, obg:null});
@@ -2536,14 +2605,30 @@ const ENDS = {
 let endsSeen = new Set(load(ENDK, []));
 let maxCh = Number(load(MAXK, 1)) || 1;
 const cur = () => st.reply ? st.reply[st.ri] : S[st.i];
+function migrateSave(){
+  try{
+    if(localStorage.getItem(SAVE)) return;
+    const o = JSON.parse(localStorage.getItem(OLDSAVE) || "null");
+    if(!o || typeof o.i!=="number") return;
+    const n = Object.assign(fresh(), {score:o.score||0, f:o.f||{}, log:Array.isArray(o.log) ? o.log : []});
+    let at = -1;
+    for(let k=n.log.length-1; k>=0 && at<0; k--){ const t = n.log[k][1]; at = S.findIndex(x => (Array.isArray(x) && x[1]===t) || (x && x.ch && x.t===t)); }
+    n.i = at>=0 ? at : 0;
+    if(at<0){ const ch = Math.min(Number(load(MAXK, 1)) || 1, NCH); n.i = Math.max(0, S.findIndex(x=>x && x.ch===ch)); }
+    store(SAVE, n);
+  }catch(e){}
+}
 function lookBack(key){ for(let k=st.i;k>=0;k--){ if(S[k] && S[k][key]!==undefined) return S[k]; } return null; }
 const chNow = () => { const c = lookBack("ch"); return c ? c.ch : 1; };
-// 자존감: 선택으로 3~8, 딸의 책을 읽은 뒤(15장부터)에는 2칸이 더 찹니다.
-const heart = () => Math.max(0, Math.min(10, Math.round(3 + (st.score||0)*5/MAXS + (chNow()>=15 ? 2 : 0))));
-let conf = Object.assign({speed:22, volB:45, volS:70, sound:true}, load(CONF, {}));
+// 자존감: 선택으로 3~8, 딸의 책을 읽은 뒤(책 대사가 끝난 다음 장부터)에는 2칸이 더 찹니다.
+const BOOKCH = (()=>{ let c = 0, last = 0; S.forEach(n=>{ if(n && n.ch) c = n.ch; if(Array.isArray(n) && n[0]==="책") last = c; }); return last + 1; })();
+const NCH = S.filter(n=>n && n.ch).length;
+migrateSave();
+const heart = () => Math.max(0, Math.min(10, Math.round(3 + (st.score||0)*5/MAXS + (chNow()>=BOOKCH ? 2 : 0))));
+let conf = Object.assign({speed:22, volB:45, volS:70, sound:true, emo:true}, load(CONF, {}));
 let seen = new Set(load(SEEN, []));
 let view = "title", timer = null, full = "", typing = false, typeEl = null;
-let curBg = "", curFx = "", layerOn = "la", locT = null, pendingLoc = "";
+let curBg = "", curVar = "", curFx = "", layerOn = "la", locT = null, pendingLoc = "";
 let auto = false, autoT = null, armed = false, lastSfxKey = "", track = "";
 let faceWho = "", faceSrc = "", faceOn = "fa", cardOn = false, endOn = false, bare = false;
 
@@ -2585,7 +2670,7 @@ function setArt(a, redraw){
   if(view==="gallery") drawGallery();
   if(view==="play"){
     if(endOn){ const n = cur(), id = n && ENDS[n.end] ? n.end : "A", img = IMG("images/bg_" + ENDS[id].img + ".jpg"); $("eBg").src = img; $("ePic").src = img; $("roll").innerHTML = buildRoll(id); }
-    else if(curBg && BG[curBg]) showScene(BG[curBg].img);
+    else if(curBg && BG[curBg]){ curVar = bgSrc(curBg, st.obg ? "" : bgVar()); showScene(curVar, true); }
     if(faceSrc && !$("face").hidden){ const s = IMG(faceSrc); if(s!==faceSrc) swapFace(s); }
   }
   if(!$("viewer").hidden){ $("vImg").src = IMG($("vImg").getAttribute("src")); }
@@ -2806,16 +2891,24 @@ function shake(){ if(reduce) return; const g=$("game"); g.classList.remove("shak
 
 /* 무대 */
 const KB = [["0%","0%","-2%","-1%"],["-1%","0%","1.5%","-1.5%"],["1%","-1%","-1%","1%"],["0%","1%","-1.5%","-1.5%"]];
-function showScene(src){
-  const nextId = layerOn==="la" ? "lb" : "la", L = $(nextId), img = L.querySelector("img");
+function showScene(src, same){
+  const nextId = layerOn==="la" ? "lb" : "la", L = $(nextId), img = L.querySelector("img"), O = $(layerOn);
   let fired = false;
   const go = () => {
     if(fired) return; fired = true;
-    const k = KB[Math.random()*KB.length|0];
-    L.style.setProperty("--kx0",k[0]); L.style.setProperty("--ky0",k[1]); L.style.setProperty("--kx1",k[2]); L.style.setProperty("--ky1",k[3]);
-    const left = Math.random()<.5; L.style.setProperty("--px0", left?"20%":"80%"); L.style.setProperty("--px1", left?"80%":"20%");
-    L.style.setProperty("--kbd", (30+Math.random()*14).toFixed(0)+"s");
-    L.classList.add("on"); $(layerOn).classList.remove("on"); layerOn = nextId;
+    if(same && O.classList.contains("on")){
+      // 같은 장면의 표정만 바뀐 그림: 카메라 움직임을 그대로 이어받아 얼굴만 바뀌어 보이게
+      ["--kx0","--ky0","--kx1","--ky1","--px0","--px1","--kbd"].forEach(v=>L.style.setProperty(v, O.style.getPropertyValue(v)));
+      L.t0 = O.t0;
+    } else {
+      const k = KB[Math.random()*KB.length|0];
+      L.style.setProperty("--kx0",k[0]); L.style.setProperty("--ky0",k[1]); L.style.setProperty("--kx1",k[2]); L.style.setProperty("--ky1",k[3]);
+      const left = Math.random()<.5; L.style.setProperty("--px0", left?"20%":"80%"); L.style.setProperty("--px1", left?"80%":"20%");
+      L.style.setProperty("--kbd", (30+Math.random()*14).toFixed(0)+"s");
+      L.t0 = performance.now();
+    }
+    img.style.animationDelay = (-(performance.now()-L.t0)/1000).toFixed(2)+"s";
+    L.classList.add("on"); O.classList.remove("on"); layerOn = nextId;
     $("blur").style.backgroundImage = "url('"+src+"')";
   };
   img.onload = go; img.onerror = go;
@@ -2825,10 +2918,15 @@ function showLoc(name){
   const el = $("loc"); el.textContent = name; el.classList.remove("show"); void el.offsetWidth; el.classList.add("show");
   clearTimeout(locT); locT = setTimeout(()=>el.classList.remove("show"), 3200);
 }
+// @=표정: 장면이 바뀐 뒤 가장 가까운 표식이 지금 그림의 표정을 정합니다
+function bgVar(){ for(let k=st.i;k>=0;k--){ const n = S[k]; if(!n) continue; if(n.v!==undefined) return n.v; if(n.bg) return ""; } return ""; }
+const bgSrc = (key, v) => (v && conf.art==="anim" && (BG[key].v||[]).includes(v)) ? "images/anim/bg_"+key+"_"+v+".jpg" : BG[key].img;
 function setScene(node){
   const key = node.bg, b = BG[key], f = node.fx || b.fx || "none";
+  const src = bgSrc(key, node===st.obg ? "" : bgVar());
+  if(key===curBg && src!==curVar){ curVar = src; showScene(src, true); }
   if(key!==curBg){
-    curBg = key; showScene(b.img);
+    curBg = key; curVar = src; showScene(src); setMood(""); $("burst").textContent = "";
     const nd = cur();
     if(cardOn || (nd && nd.ch)) pendingLoc = b.name; else showLoc(b.name);
     if(!seen.has(key)){ seen.add(key); store(SEEN, [...seen]); }
@@ -2853,13 +2951,14 @@ function render(){
     }
     const n = S[st.i];
     if(!n) break;
-    if(n.bg || n.lb){ st.i++; continue; }
+    if(n.bg || n.lb || n.v!==undefined){ st.i++; continue; }
     if(n.set){ applyFlags(n.set); st.i++; continue; }
     if(n.go){ st.i = (!n.if || test(n.if)) ? LABEL[n.go] : st.i+1; continue; }
     if(n.cnd){ const br = test(n.cnd) ? n.a : n.b; if(br && br.length){ st.reply = br; st.ri = 0; } else st.i++; continue; }
     break;
   }
   setScene(bgNode());
+  ahead();
   const node = cur();
   store(SAVE, st);
   clearChoices();
@@ -2885,7 +2984,7 @@ function say(n){
   if(thought){ txt = txt.slice(1,-1); label = NAME("정우") + " · " + U("think"); box.classList.add("thinking"); }
   $("who").textContent = label;
   $("text").className = "text" + (who==="" ? " narr" : "") + (thought ? " thought" : "");
-  if(FACE[who]){ box.classList.add("hasface"); setFace(who, ex); } else hideFace();
+  if(FACE[who]){ box.classList.add("hasface"); setFace(who, ex); emote(ex, raw); } else hideFace();
   if((ex==="sur"||ex==="ang") && /[!?]/.test(txt) && !thought) shake();
   typeInto($("text"), txt);
 }
@@ -2913,34 +3012,94 @@ function advance(){
   if(node.c || node.end) return;
   st.i++; render();
 }
-function restart(){ st = fresh(); lastSfxKey = ""; curBg = ""; curFx = ""; endOn = false; $("ending").hidden = true; efx.stop(); store(SAVE, st); render(); }
+function restart(){ st = fresh(); lastSfxKey = ""; curBg = ""; curVar = ""; curFx = ""; setMood(""); endOn = false; $("ending").hidden = true; efx.stop(); store(SAVE, st); render(); }
+
+/* 장면의 감정 연출: 표정 → 화면 분위기(대사가 바뀌어도 다음 표정이 올 때까지 남음) + 한 번 터지는 효과 */
+const MOOD = {sad:"blue", cry:"blue", tsm:"warm", s:"joy", l:"joy", ang:"ang", emb:"emb", wor:"dim", tir:"dim", thk:"think", ser:"ser", n:"", smk:"", pout:""};
+const POP = {cry:"tears", l:"spark", smk:"twinkle", tsm:"bokeh", sur:"shock", pan:"pan", pout:"puff", ang:"rage"};
+let lastPop = "";
+function setMood(m){ const g = $("game"); if(!g) return; if(m && conf.emo) g.dataset.mood = m; else delete g.dataset.mood; }
+function emote(ex, key){
+  if(!conf.emo) return setMood("");
+  if(ex in MOOD) setMood(MOOD[ex]);
+  const k = ex + "|" + key;
+  if(POP[ex] && k!==lastPop){ lastPop = k; pop(POP[ex]); }
+}
+function pop(kind){
+  if(reduce) return;
+  const host = $("burst"), R = (a,b) => a + Math.random()*(b-a);
+  const add = (cls, css) => { const e = document.createElement("b"); e.className = cls; Object.assign(e.style, css||{}); host.appendChild(e); setTimeout(()=>e.remove(), 4200); return e; };
+  if(host.childElementCount>40) host.textContent = "";
+  if(kind==="spark" || kind==="twinkle"){
+    const n = kind==="spark" ? 9 : 3;
+    for(let i=0;i<n;i++){ const e = add("sp", {left:R(8,90)+"%", top:R(6,58)+"%", animationDelay:R(0,.7).toFixed(2)+"s"}); e.style.setProperty("--z", R(12,28).toFixed(0)+"px"); }
+  }
+  if(kind==="bokeh"){
+    for(let i=0;i<10;i++){ const e = add("bk", {left:R(4,92)+"%", top:R(20,75)+"%", animationDelay:R(0,1.2).toFixed(2)+"s"}); e.style.setProperty("--z", R(24,70).toFixed(0)+"px"); e.style.setProperty("--d", R(3,4.2).toFixed(1)+"s"); }
+  }
+  if(kind==="tears"){
+    add("tb");
+    for(let i=0;i<7;i++){ const e = add("dr", {left:R(6,92)+"%", top:R(4,40)+"%", animationDelay:R(0,1.4).toFixed(2)+"s"}); e.style.setProperty("--z", R(9,18).toFixed(0)+"px"); e.style.setProperty("--d", R(2.2,3.2).toFixed(1)+"s"); }
+  }
+  if(kind==="puff"){
+    for(let i=0;i<4;i++){ const e = add("pf", {left:(42+i*5+R(-3,3))+"%", top:R(52,62)+"%", animationDelay:(i*.08).toFixed(2)+"s"}); e.style.setProperty("--z", R(26,44).toFixed(0)+"px"); e.style.setProperty("--x", (i<2?-1:1)*R(10,30)+"px"); }
+  }
+  if(kind==="shock" || kind==="pan"){
+    add("fl"); add("sl");
+    const g = $("game"); g.classList.remove("punch"); void g.offsetWidth; g.classList.add("punch");
+    if(kind==="pan") shake();
+  }
+  if(kind==="rage") add("sl red");
+}
 
 /* 얼굴과 감정 표시 */
 const EMO = {sur:"!", l:"♪", emb:"//", sad:"…", pan:"!?", thk:"?", ang:'<svg viewBox="0 0 20 20"><path d="M2 8 Q8 8 8 2 M12 2 Q12 8 18 8 M18 12 Q12 12 12 18 M8 18 Q8 12 2 12" stroke="#d9634a" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'};
 const faceFile = (who, ex) => IMG("images/face_" + FACE[who](chNow()) + "_" + ex + ".webp");
 function setFace(who, ex){
-  const f = $("face"); f.hidden = false;
-  const src = faceFile(who, ex);
+  const f = $("face"), was = f.hidden; f.hidden = false;
+  const src = faceFile(who, ex), other = who!==faceWho;
   [...f.classList].filter(c=>c.startsWith("e-")).forEach(c=>f.classList.remove(c));
-  if(who!==faceWho){ faceWho = who; f.classList.remove("pop"); void f.offsetWidth; f.classList.add("pop"); }
-  if(src!==faceSrc) swapFace(src);
+  if(other){ faceWho = who; f.classList.remove("pop"); void f.offsetWidth; f.classList.add("pop"); }
+  if(src!==faceSrc) swapFace(src, other || was);
   void f.offsetWidth; f.classList.add("e-"+ex);
   const e = $("emote"); e.classList.remove("go"); e.innerHTML = EMO[ex] || "";
   if(EMO[ex] && !reduce){ void e.offsetWidth; e.classList.add("go"); }
   const t = $("tear"); t.classList.remove("go");
   if(ex==="cry" && !reduce){ void t.offsetWidth; t.classList.add("go"); }
 }
-function swapFace(src){
+// 말하는 사람이 바뀌면 앞사람 얼굴을 곧바로 내리고, 새 얼굴은 받아지는 대로 띄웁니다.
+// (예전에는 새 얼굴이 늦게 받아지면 앞사람 얼굴이 새 대사 옆에 남아 있었습니다.)
+function swapFace(src, cut){
   faceSrc = src;
-  const nextId = faceOn==="fa" ? "fb" : "fa", im = $(nextId);
+  const nextId = faceOn==="fa" ? "fb" : "fa", im = $(nextId), old = $(faceOn);
   let fired = false;
-  const go = () => { if(fired) return; fired = true; im.classList.add("on"); $(faceOn).classList.remove("on"); faceOn = nextId; };
+  im.classList.remove("on");
+  if(cut){ old.style.transition = "none"; old.classList.remove("on"); void old.offsetWidth; old.style.transition = ""; }
+  const go = () => { if(fired || faceSrc!==src) return; fired = true; im.classList.add("on"); old.classList.remove("on"); faceOn = nextId; };
   im.onload = go;
   im.onerror = () => { if(!/_n\.webp$/.test(im.src)) im.src = src.replace(/_[a-z]+\.webp$/, "_n.webp"); else go(); };
   im.src = src;
   if(im.complete && im.naturalWidth) go();
 }
 function hideFace(){ $("face").hidden = true; $("box").classList.remove("hasface"); faceWho = ""; }
+/* 미리 받기: 지금 자리부터 앞으로 나올 얼굴·장면 그림을 먼저 받아 둡니다 */
+const fetched = new Set();
+function fetchImg(src){ if(!src || fetched.has(src)) return; fetched.add(src); const im = new Image(); im.decoding = "async"; im.src = src; }
+function ahead(){
+  let ch = chNow(), key = curBg;
+  const one = x => {
+    if(Array.isArray(x)){ if(FACE[x[0]]) fetchImg(IMG("images/face_"+FACE[x[0]](ch)+"_"+(x[3]||"n")+".webp")); return; }
+    if(!x) return;
+    if(x.bg && BG[x.bg]){ key = x.bg; fetchImg(BG[x.bg].img); }
+    if(x.v && key) fetchImg(bgSrc(key, x.v));
+    if(x.ch) ch = x.ch;
+    if(x.c) x.c.forEach(o=>o.r.forEach(one));
+    if(x.cnd){ x.a.forEach(one); x.b.forEach(one); }
+    if(x.iff) x.iff.forEach(one);
+  };
+  if(st.reply) st.reply.slice(st.ri).forEach(one);
+  for(let k=st.i, n=0; k<S.length && n<36; k++, n++) one(S[k]);
+}
 
 /* 책 */
 function showBook(){
@@ -2953,9 +3112,9 @@ function hideBook(){ $("book").hidden = true; }
 /* 장 카드 */
 const AGE = {1:"서윤 7세 · 아빠 34세",2:"서윤 8~9세 · 초등학교 1~3학년",3:"서윤 10~11세 · 4~5학년",4:"서윤 12세 · 6학년",5:"서윤 13~15세 · 중학교",6:"서윤 16~18세 · 고등학교",7:"서윤 19세 · 수험의 겨울",8:"서윤 20세 · 아빠 47세",9:"혼자 남은 일 년",10:"이듬해 봄 · 아빠 48세",11:"그해 늦여름",12:"그해 늦가을",13:"그해 초겨울",14:"그해 십이월",15:"이듬해 봄, 교토 · 아빠 49세",16:"교토의 닷새",17:"그 뒤로"};
 function showCard(node){
-  cardOn = true; $("box").classList.add("hid"); hideFace(); hideBook();
+  cardOn = true; $("box").classList.add("hid"); hideFace(); hideBook(); setMood("");
   const m = node.t.split(/\s{2,}/), c = $("chcard");
-  $("cardNo").textContent = m[0].replace(/(\d+)/," $1 ").replace(/\s+/g," ").trim() + "  /  18";
+  $("cardNo").textContent = m[0].replace(/(\d+)/," $1 ").replace(/\s+/g," ").trim() + "  /  " + NCH;
   let n = 0;
   const words = L==="ja" ? [...(m[1]||"")] : (m[1]||"").split(" ");   // 일본어는 띄어쓰기가 없어 글자마다 줄을 바꿀 수 있게
   $("cardT").innerHTML = words.map(w=>'<span class="w">'+[...w].map(ch=>'<span style="animation-delay:'+(0.2+(n++)*(L==="en"?0.045:0.07)).toFixed(2)+'s">'+esc(ch)+'</span>').join("")+'</span>').join(L==="ja" ? "" : " ");
@@ -3017,7 +3176,7 @@ function buildRoll(id){
 }
 function showEnding(id){
   id = ENDS[id] ? id : "A"; const E = ENDS[id];
-  endOn = true; clearTimeout(autoT); $("box").classList.add("hid"); hideFace(); hideBook(); ambStop();
+  endOn = true; clearTimeout(autoT); $("box").classList.add("hid"); hideFace(); hideBook(); ambStop(); setMood("");
   endsSeen.add(id); store(ENDK, [...endsSeen]);
   const img = IMG("images/bg_" + E.img + ".jpg");
   $("eBg").src = img; $("ePic").src = img; $("ePic").alt = E.t; $("eName").textContent = E.t; $("eTag").textContent = "ENDING " + id;
@@ -3052,6 +3211,7 @@ function drawMenu(){
   document.querySelectorAll("#menu [data-game]").forEach(el=>el.hidden = !inGame);
   $("auto").setAttribute("aria-pressed", String(auto));
   $("snd").setAttribute("aria-pressed", String(conf.sound)); $("snd").firstChild.textContent = conf.sound ? U("sndOn") : U("sndOff");
+  $("emoBtn").setAttribute("aria-pressed", String(conf.emo));
   document.querySelectorAll("#speedSeg button").forEach(b=>b.setAttribute("aria-pressed", String(Number(b.dataset.s)===conf.speed)));
   $("volB").value = conf.volB; $("volS").value = conf.volS;
   if(inGame){
@@ -3158,6 +3318,7 @@ $("logClose").onclick = () => { $("logm").hidden = true; };
 $("logm").addEventListener("click", e => { if(e.target===$("logm")) $("logm").hidden = true; });
 $("bareBtn").onclick = () => { $("menu").hidden = true; setBare(true); };
 $("full").onclick = () => { try{ const p = document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); p && p.catch(()=>{ $("full").querySelector("small").textContent = U("fullNo"); }); }catch(e){ $("full").querySelector("small").textContent = U("fullNo"); } };
+$("emoBtn").onclick = () => { conf.emo = !conf.emo; store(CONF, conf); drawMenu(); if(!conf.emo){ setMood(""); $("burst").textContent = ""; } else { const n = cur(); if(Array.isArray(n) && FACE[n[0]]) emote(n[3]||"n", ""); } };
 $("snd").onclick = () => { conf.sound = !conf.sound; store(CONF, conf); drawMenu(); if(view==="play"){ setBgm((SCENE_AUDIO[curBg]||["warm"])[0]); ambType = "-"; amb(curFx); } };
 $("speedSeg").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return; conf.speed = Number(b.dataset.s); store(CONF, conf); drawMenu(); });
 $("volB").oninput = e => { conf.volB = Number(e.target.value); bgmVol(); store(CONF, conf); };
@@ -3194,7 +3355,7 @@ function route(){
   if(view==="play"){
     const s = load(SAVE, null);
     if(s && typeof s.i==="number" && S[s.i]){ st = Object.assign(fresh(), s); if(!Array.isArray(st.log)) st.log = []; }
-    curBg = ""; curFx = ""; faceWho = ""; faceSrc = ""; cardOn = false; endOn = false; lastSfxKey = ""; setBare(false);
+    curBg = ""; curVar = ""; curFx = ""; setMood(""); faceWho = ""; faceSrc = ""; cardOn = false; endOn = false; lastSfxKey = ""; setBare(false);
     $("chcard").hidden = true; $("ending").hidden = true; efx.stop();
     requestAnimationFrame(()=>{ render(); $("box").focus({preventScroll:true}); });
   } else { bgmStop(); ambStop(); fx.stop(); efx.stop(); curFx = ""; }
@@ -3206,8 +3367,10 @@ addEventListener("hashchange", route);
 
 function preload(){
   const sets = ["jw30","jw40","sy7","sy10","sy12","sy15","sy18","sy20","jisoo","mom","dad","minho","jm","hr"], ex = ["n","s","l","sad","cry","sur","ang","emb","wor","tsm","ser","tir","pout","smk","thk","pan"];
-  const list = [...Object.values(BG).map(b=>b.img), ...sets.flatMap(s=>ex.map(e=>IMG("images/face_"+s+"_"+e+".webp")))];
-  let i = 0; const next = () => { if(i>=list.length) return; const im = new Image(); im.onload = im.onerror = next; im.src = list[i++]; };
+  // 얼굴(작은 파일)을 먼저, 장면은 뒤에. 지금 자리 근처는 ahead()가 따로 먼저 받습니다.
+  const vars = conf.art==="anim" ? Object.keys(BG).flatMap(k=>(BG[k].v||[]).map(v=>bgSrc(k, v))) : [];
+  const list = [...sets.flatMap(s=>ex.map(e=>IMG("images/face_"+s+"_"+e+".webp"))), ...Object.values(BG).map(b=>b.img), ...vars];
+  let i = 0; const next = () => { while(i<list.length && fetched.has(list[i])) i++; if(i>=list.length) return; const src = list[i++]; fetched.add(src); const im = new Image(); im.onload = im.onerror = next; im.src = src; };
   for(let k=0;k<4;k++) next();
 }
 function start(saved){
